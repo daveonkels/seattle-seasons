@@ -1,0 +1,936 @@
+/* ==========================================================================
+   Seattle Seasons — Interactive Field Guide
+   Civic chrome (light, restrained) + per-season atmospheric drench (committed)
+   ========================================================================== */
+
+:root {
+  /* Chrome tokens — restrained, tinted toward navy. Never change. */
+  --ink: oklch(22% 0.035 248);
+  --ink-soft: oklch(34% 0.04 248);
+  --paper: oklch(96% 0.012 85);
+  --paper-warm: oklch(93% 0.018 80);
+  --paper-line: oklch(82% 0.02 80);
+  --civic-red: oklch(52% 0.18 28);
+
+  /* Active season drench — JS overwrites these. */
+  --season-a: oklch(28% 0.04 250);
+  --season-b: oklch(42% 0.06 245);
+  --season-ink: oklch(96% 0.015 85);
+  --season-ink-soft: oklch(88% 0.02 85);
+  --season-glow: oklch(60% 0.10 240 / 0.4);
+
+  /* Motion */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --drench-ms: 900ms;
+  --content-ms: 600ms;
+
+  /* Typography */
+  --font-display: 'Khand', 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
+  --font-mono: 'Fragment Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body: 'Nippo', system-ui, -apple-system, sans-serif;
+
+  /* Scale */
+  --t-step: clamp(0.7rem, 0.65rem + 0.2vw, 0.78rem);
+  --t-body: clamp(0.95rem, 0.85rem + 0.4vw, 1.1rem);
+  --t-lede: clamp(1.1rem, 0.9rem + 1vw, 1.55rem);
+  --t-title: clamp(3.2rem, 4rem + 8vw, 14rem);
+  --t-masthead: clamp(1.8rem, 1.4rem + 2.4vw, 3.4rem);
+
+  /* Spacing scale */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4.5rem;
+
+  /* Layout */
+  --chrome-pad: clamp(1.25rem, 2.4vw, 2.25rem);
+  --scrubber-h: 86px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { overflow: hidden; height: 100%; background: var(--paper); }
+body {
+  min-height: 100dvh;
+  height: 100dvh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+  color: var(--season-ink);
+  background: oklch(96% 0.012 85);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  cursor: grab;
+}
+body.is-dragging { cursor: grabbing; }
+body.is-dragging * { cursor: grabbing !important; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Backdrop layers
+   ========================================================================== */
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#drench {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(120% 80% at 20% 0%, var(--season-a) 0%, transparent 60%),
+    radial-gradient(140% 120% at 80% 100%, var(--season-b) 0%, var(--season-a) 70%);
+  transition: background var(--drench-ms) var(--ease-out-quart);
+}
+
+#vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 60%, color-mix(in oklch, var(--season-a) 60%, transparent) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+  transition: background var(--drench-ms) var(--ease-out-quart);
+}
+
+/* Convergence split */
+body[data-season="convergence-zones"] #drench {
+  background:
+    linear-gradient(90deg,
+      oklch(35% 0.06 245) 0%,
+      oklch(35% 0.06 245) 49.5%,
+      oklch(70% 0.03 240) 50%,
+      oklch(78% 0.10 85) 50.5%,
+      oklch(78% 0.10 85) 100%
+    );
+}
+body[data-season="convergence-zones"] #vignette {
+  background:
+    radial-gradient(60% 100% at 25% 50%, transparent 50%, oklch(20% 0.06 245 / 0.5) 100%),
+    radial-gradient(60% 100% at 75% 50%, transparent 50%, oklch(60% 0.10 85 / 0.3) 100%);
+}
+
+/* ==========================================================================
+   Civic chrome
+   ========================================================================== */
+.chrome {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  color: var(--season-ink);
+  transition: color var(--drench-ms) var(--ease-out-quart);
+}
+.chrome__corner {
+  position: absolute;
+  padding: var(--chrome-pad);
+  pointer-events: auto;
+}
+.chrome__corner--tl { top: 0; left: 0; max-width: min(640px, 70vw); }
+.chrome__corner--tr { top: 0; right: 0; text-align: right; }
+
+.chrome__city {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-family: var(--font-mono);
+  font-size: var(--t-step);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 0.55em;
+}
+.chrome__city .dot {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--civic-red);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--civic-red) 30%, transparent);
+}
+
+.chrome__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-masthead);
+  letter-spacing: -0.015em;
+  line-height: 0.95;
+  margin: 0;
+  text-transform: none;
+}
+.chrome__subtitle {
+  font-family: var(--font-mono);
+  font-size: var(--t-step);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin: 0.6em 0 0;
+  opacity: 0.75;
+}
+
+/* Footer credit — a midpoint blend of the season's bg and ink, so it tints with the year */
+.credit {
+  position: absolute;
+  right: var(--chrome-pad);
+  bottom: 1.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  color: color-mix(in oklch, var(--season-a) 55%, var(--season-ink) 45%);
+  pointer-events: auto;
+  transition: color 320ms var(--ease-out-quart), letter-spacing 240ms var(--ease-out-quart);
+}
+.credit:hover,
+.credit:focus-visible {
+  color: var(--season-ink);
+  letter-spacing: 0.22em;
+}
+.credit:focus-visible {
+  outline: 2px solid var(--civic-red);
+  outline-offset: 4px;
+}
+.credit__arrow {
+  display: inline-block;
+  transition: transform 240ms var(--ease-out-quart);
+}
+.credit:hover .credit__arrow,
+.credit:focus-visible .credit__arrow {
+  transform: translate(2px, -2px);
+}
+@media (max-width: 760px) {
+  .credit {
+    bottom: 0.8em;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+  /* On narrow screens, the hint and credit fight for the same baseline.
+     The hint already fades after first interaction; tuck it left so they cohabit. */
+  .scrubber__hint { text-align: left; }
+}
+
+.advisory {
+  /* Reset button defaults — this is now an interactive element */
+  font: inherit;
+  background: none;
+  border: 0;
+  text-align: right;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6em;
+  font-family: var(--font-mono);
+  font-size: var(--t-step);
+  transition: filter 280ms var(--ease-out-quart),
+              transform 280ms var(--ease-out-quart);
+}
+.advisory:hover,
+.advisory:focus-visible {
+  filter: brightness(1.18) saturate(1.05);
+  transform: translateY(-1px);
+}
+.advisory:focus-visible {
+  outline: 2px solid var(--civic-red);
+  outline-offset: 4px;
+}
+.advisory__head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.78;
+}
+.advisory__dot {
+  width: 0.55em;
+  height: 0.55em;
+  background: var(--civic-red);
+  border-radius: 50%;
+  animation: pulse-dot 2.2s var(--ease-out-quart) infinite;
+}
+@keyframes pulse-dot {
+  0%, 60%, 100% { opacity: 1; transform: scale(1); }
+  30% { opacity: 0.35; transform: scale(1.4); }
+}
+.advisory__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  border: 1px solid color-mix(in oklch, currentColor 22%, transparent);
+  padding: 0.7em 0.95em;
+  background: color-mix(in oklch, var(--season-a) 35%, transparent);
+  backdrop-filter: blur(8px) saturate(1.1);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  transition: border-color 240ms var(--ease-out-quart);
+}
+.advisory__main .advisory__dot {
+  position: absolute;
+  top: 0.8em;
+  left: 0.85em;
+  width: 0.45em;
+  height: 0.45em;
+}
+.advisory:hover .advisory__main,
+.advisory:focus-visible .advisory__main {
+  border-color: color-mix(in oklch, var(--civic-red) 60%, currentColor 40%);
+}
+.advisory__label,
+.advisory__season,
+.advisory__week {
+  display: block;
+}
+.advisory__label {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-size: 0.7em;
+}
+.advisory__season {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 0.9rem + 1vw, 1.6rem);
+  letter-spacing: -0.005em;
+  margin-top: 0.1em;
+  white-space: nowrap;
+}
+.advisory__week {
+  font-size: 0.78em;
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+  margin-top: 0.2em;
+}
+
+.advisory__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.7em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--civic-red);
+  opacity: 0.65;
+  transition: opacity 240ms var(--ease-out-quart);
+}
+.advisory:hover .advisory__cta,
+.advisory:focus-visible .advisory__cta {
+  opacity: 1;
+}
+.advisory__cta-arrow {
+  display: inline-block;
+  transition: transform 600ms var(--ease-out-quart);
+}
+.advisory:hover .advisory__cta-arrow,
+.advisory:focus-visible .advisory__cta-arrow {
+  transform: rotate(-180deg);
+}
+
+/* ==========================================================================
+   Skyline silhouette
+   ========================================================================== */
+.skyline {
+  position: fixed;
+  bottom: var(--scrubber-h);
+  left: 0;
+  width: 100%;
+  height: clamp(60px, 10vh, 110px);
+  z-index: 5;
+  color: var(--season-ink);
+  opacity: 0.32;
+  pointer-events: none;
+  transition: color var(--drench-ms) var(--ease-out-quart), opacity var(--drench-ms) var(--ease-out-quart);
+}
+body[data-season="dark-wet"] .skyline,
+body[data-season="dark-wet-2"] .skyline { opacity: 0.4; }
+body[data-season="glorious-sun"] .skyline,
+body[data-season="oppressive-sun"] .skyline { opacity: 0.2; }
+
+/* ==========================================================================
+   Active season content
+   ========================================================================== */
+.content {
+  position: relative;
+  z-index: 8;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto auto;
+  align-items: end;
+  padding: calc(var(--chrome-pad) + 5.5rem) var(--chrome-pad) calc(var(--scrubber-h) + 1.5rem);
+  gap: var(--sp-5);
+  pointer-events: none;
+  color: var(--season-ink);
+  transition: color var(--drench-ms) var(--ease-out-quart);
+}
+.content > * { pointer-events: auto; }
+
+.content__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.4em;
+}
+.content__subtitle {
+  font-family: var(--font-mono);
+  font-size: var(--t-step);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  opacity: 0.85;
+  margin: 0;
+  padding-bottom: 0.45em;
+  border-bottom: 1px solid color-mix(in oklch, currentColor 30%, transparent);
+  display: inline-block;
+}
+.content__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--t-title);
+  line-height: 0.86;
+  letter-spacing: -0.025em;
+  margin: 0;
+  max-width: 14ch;
+  text-wrap: balance;
+  /* slight ink texture via subtle text-shadow on darker scenes */
+}
+body[data-mood="dark"] .content__title {
+  text-shadow: 0 1px 0 color-mix(in oklch, var(--season-a) 50%, transparent);
+}
+
+.content__body-wrap {
+  max-width: 38ch;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+.content__body {
+  font-family: var(--font-body);
+  font-size: var(--t-lede);
+  line-height: 1.4;
+  margin: 0;
+  text-wrap: pretty;
+  opacity: 0.95;
+}
+.content__footnote {
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  font-style: italic;
+  opacity: 0.7;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   EXPECT stamp
+   ========================================================================== */
+.stamp {
+  justify-self: end;
+  align-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  max-width: 380px;
+  padding: var(--sp-2) 0;
+  color: var(--season-ink);
+  position: relative;
+  transition: color var(--drench-ms) var(--ease-out-quart);
+}
+.stamp__seal {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  color: var(--civic-red);
+  display: grid;
+  place-items: center;
+  /* Subtle cream-paper disc behind the seal — keeps the "stamped on paper"
+     reading without the full box punching out from the scene. */
+  background:
+    radial-gradient(circle at 50% 50%,
+      color-mix(in oklch, var(--paper) 55%, transparent) 0%,
+      color-mix(in oklch, var(--paper) 38%, transparent) 65%,
+      transparent 78%);
+}
+.stamp__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.stamp__curve-text {
+  fill: currentColor;
+  font-family: var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.stamp__big {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--civic-red);
+  transform: rotate(-3deg);
+  position: relative;
+  z-index: 1;
+}
+.stamp__text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--season-ink);
+  text-wrap: pretty;
+  transition: color var(--drench-ms) var(--ease-out-quart);
+}
+
+/* ==========================================================================
+   Micro-controls — tiny icon buttons under the advisory
+   ========================================================================== */
+.micro-controls {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 0.4em;
+  margin-top: 0.85em;
+}
+
+.micro-btn {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: inherit;
+  opacity: 0.55;
+  border: 1px solid color-mix(in oklch, currentColor 20%, transparent);
+  background: color-mix(in oklch, var(--season-a) 22%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: opacity 240ms var(--ease-out-quart),
+              transform 220ms var(--ease-out-quart),
+              border-color 240ms var(--ease-out-quart),
+              background var(--drench-ms) var(--ease-out-quart);
+}
+.micro-btn:hover,
+.micro-btn:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+  border-color: color-mix(in oklch, currentColor 55%, transparent);
+}
+.micro-btn:focus-visible {
+  outline: 2px solid var(--civic-red);
+  outline-offset: 3px;
+}
+.micro-btn svg { display: block; }
+
+/* Tooltip — appears below the icon, right-anchored so it stays on screen */
+.micro-btn::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.4em 0.65em;
+  border: 1px solid color-mix(in oklch, currentColor 25%, transparent);
+  background: color-mix(in oklch, var(--season-a) 80%, transparent);
+  color: var(--season-ink);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition: opacity 200ms var(--ease-out-quart),
+              transform 200ms var(--ease-out-quart);
+  z-index: 50;
+}
+.micro-btn:hover::after,
+.micro-btn:focus-visible::after,
+.micro-btn.is-flashing::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Audio EQ glyph — 3 bars, animate when audio is on */
+.micro-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+.micro-eq i {
+  display: inline-block;
+  width: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  transform-origin: bottom;
+}
+.micro-eq i:nth-child(1) { height: 30%; }
+.micro-eq i:nth-child(2) { height: 70%; }
+.micro-eq i:nth-child(3) { height: 45%; }
+.micro-btn[aria-pressed="true"] .micro-eq i {
+  animation: audio-eq 1.2s ease-in-out infinite alternate;
+}
+.micro-btn[aria-pressed="true"] .micro-eq i:nth-child(2) { animation-delay: 0.15s; }
+.micro-btn[aria-pressed="true"] .micro-eq i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes audio-eq {
+  from { transform: scaleY(0.4); }
+  to   { transform: scaleY(1.6); }
+}
+
+/* ==========================================================================
+   Year wheel scrubber
+   ========================================================================== */
+.scrubber {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  height: var(--scrubber-h);
+  background:
+    linear-gradient(180deg, transparent, color-mix(in oklch, var(--season-a) 70%, transparent) 30%, color-mix(in oklch, var(--season-a) 88%, black 8%) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0 var(--chrome-pad) 1.1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5em;
+  border-top: 1px solid color-mix(in oklch, var(--season-ink) 18%, transparent);
+  color: var(--season-ink);
+  transition: background var(--drench-ms) var(--ease-out-quart),
+              color var(--drench-ms) var(--ease-out-quart);
+}
+
+.scrubber__legend {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  padding: 0 4px;
+}
+.scrubber__legend span { line-height: 1; }
+
+.scrubber__track {
+  position: relative;
+  height: 28px;
+  border-top: 1px solid color-mix(in oklch, currentColor 25%, transparent);
+  border-bottom: 1px solid color-mix(in oklch, currentColor 25%, transparent);
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+
+.scrubber__ticks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(52, 1fr);
+}
+.scrubber__ticks span {
+  border-left: 1px solid color-mix(in oklch, currentColor 18%, transparent);
+  align-self: stretch;
+}
+.scrubber__ticks span:first-child { border-left: 0; }
+.scrubber__ticks span.major {
+  border-left-color: color-mix(in oklch, currentColor 50%, transparent);
+}
+
+.scrubber__segments {
+  position: absolute;
+  inset: 4px 0;
+  pointer-events: none;
+}
+.scrubber__seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--seg-color, transparent);
+  opacity: 0.55;
+  border-right: 1px dashed color-mix(in oklch, currentColor 18%, transparent);
+}
+.scrubber__seg:last-child { border-right: 0; }
+.scrubber__seg.active { opacity: 0.95; }
+
+/* Today marker — civic landmark, persists when handle scrubs past */
+.scrubber__today {
+  position: absolute;
+  top: -22px;
+  bottom: -10px;
+  left: 0;
+  width: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
+  color: var(--civic-red);
+}
+.scrubber__today-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+.scrubber__today-mark {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--civic-red) 30%, transparent);
+  animation: today-pulse 2.8s var(--ease-out-quart) infinite;
+}
+@keyframes today-pulse {
+  0%, 65%, 100% { box-shadow: 0 0 0 2px color-mix(in oklch, var(--civic-red) 30%, transparent); }
+  32% { box-shadow: 0 0 0 10px color-mix(in oklch, var(--civic-red) 0%, transparent); }
+}
+.scrubber__today-line {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  width: 1px;
+  height: 28px;
+  background: currentColor;
+  opacity: 0.42;
+  transform: translateX(-50%);
+}
+
+.scrubber__handle {
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  width: 2px;
+  background: var(--season-ink);
+  left: 0;
+  transform: translateX(-50%);
+  cursor: grab;
+  pointer-events: auto;
+  outline: none;
+  z-index: 2;
+  transition: background var(--drench-ms) var(--ease-out-quart);
+}
+.scrubber__handle::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 14px;
+  height: 14px;
+  background: var(--season-ink);
+  border: 2px solid var(--season-a);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: transform 200ms var(--ease-out-quart),
+              background var(--drench-ms) var(--ease-out-quart),
+              border-color var(--drench-ms) var(--ease-out-quart);
+}
+.scrubber__handle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 9px solid var(--season-ink);
+  transform: translateX(-50%);
+  transition: border-top-color var(--drench-ms) var(--ease-out-quart);
+}
+.scrubber__handle:hover::before,
+.scrubber__handle:focus-visible::before {
+  transform: translateX(-50%) scale(1.3);
+}
+.scrubber__handle:focus-visible {
+  outline: 2px solid var(--civic-red);
+  outline-offset: 4px;
+}
+
+.scrubber__handle-flag {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.4em 0.7em;
+  background: var(--season-ink);
+  color: var(--season-a);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out-quart);
+}
+.scrubber__handle-flag::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--season-ink);
+}
+body.is-dragging .scrubber__handle-flag,
+.scrubber__handle:hover .scrubber__handle-flag,
+.scrubber__handle:focus-visible .scrubber__handle-flag {
+  opacity: 1;
+}
+
+.scrubber__hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  opacity: 0.55;
+  text-align: center;
+  height: 1em;
+  transition: opacity 600ms var(--ease-out-quart);
+}
+body[data-interacted="true"] .scrubber__hint { opacity: 0; }
+
+/* Handle pulse hint at first load */
+.scrubber__handle::before {
+  animation: handle-pulse 2.4s var(--ease-out-quart) infinite;
+}
+body[data-interacted="true"] .scrubber__handle::before { animation: none; }
+@keyframes handle-pulse {
+  0%, 70%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--season-ink) 30%, transparent); }
+  35% { box-shadow: 0 0 0 12px color-mix(in oklch, var(--season-ink) 0%, transparent); }
+}
+
+/* ==========================================================================
+   Reveal-on-load sequence
+   ========================================================================== */
+body[data-loaded="false"] .chrome,
+body[data-loaded="false"] .scrubber,
+body[data-loaded="false"] .skyline,
+body[data-loaded="false"] .content { opacity: 0; }
+
+body[data-loaded="true"] .chrome { opacity: 1; transition: opacity 700ms var(--ease-out-quart) 100ms; }
+body[data-loaded="true"] .skyline { opacity: 0.32; transition: opacity 1100ms var(--ease-out-quart) 600ms, color var(--drench-ms) var(--ease-out-quart); }
+body[data-loaded="true"] .scrubber { opacity: 1; transition: opacity 700ms var(--ease-out-quart) 900ms; }
+body[data-loaded="true"] .content { opacity: 1; transition: opacity 800ms var(--ease-out-quart) 1300ms; }
+
+.reveal-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.5em);
+  transition: opacity 700ms var(--ease-out-quart), transform 800ms var(--ease-out-quart);
+}
+body[data-loaded="true"] .reveal-word { opacity: 1; transform: translateY(0); }
+body[data-loaded="true"] .reveal-word:nth-child(1) { transition-delay: 300ms; }
+body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
+
+/* Season-content swap animation */
+.content__subtitle,
+.content__title,
+.content__body,
+.content__footnote,
+.stamp {
+  --swap-y: 0px;
+  transition: opacity 400ms var(--ease-out-quart), transform 500ms var(--ease-out-expo);
+}
+.content.is-swapping .content__subtitle,
+.content.is-swapping .content__title,
+.content.is-swapping .content__body,
+.content.is-swapping .content__footnote,
+.content.is-swapping .stamp {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.content__title { transition-delay: 60ms; }
+.content__body  { transition-delay: 120ms; }
+.content__footnote { transition-delay: 180ms; }
+.stamp          { transition-delay: 200ms; }
+
+/* ==========================================================================
+   Mobile
+   ========================================================================== */
+@media (max-width: 760px) {
+  :root {
+    --chrome-pad: 1.1rem;
+    --scrubber-h: 96px;
+    --t-title: clamp(2.6rem, 18vw, 6.5rem);
+  }
+  .chrome__corner--tl { max-width: 60vw; }
+  .chrome__corner--tr { max-width: 38vw; }
+  .advisory__main { padding: 0.55em 0.75em; }
+  .skyline { display: none; }
+  .content {
+    padding-top: calc(var(--chrome-pad) + 7.5rem);
+    grid-template-rows: 1fr auto auto;
+  }
+  .content__head { gap: 0.3em; }
+  .content__body-wrap { max-width: 30ch; }
+  .stamp {
+    max-width: 100%;
+    width: 100%;
+    justify-self: stretch;
+  }
+  .stamp__seal { width: 76px; height: 76px; }
+  .stamp__big { font-size: 1.05rem; }
+  .micro-btn { width: 28px; height: 28px; }
+  .micro-btn::after { font-size: 0.55rem; padding: 0.35em 0.55em; }
+  .scrubber__legend { font-size: 0.6rem; }
+}
+
+@media (max-height: 600px) {
+  .content__body-wrap { display: none; }
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 200ms !important;
+  }
+  .scrubber__handle::before { animation: none; }
+}

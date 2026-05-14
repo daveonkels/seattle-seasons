@@ -1,0 +1,100 @@
+# Seattle Seasons
+
+> A Helpful Guide for New Arrivals
+
+An interactive field guide to Seattle's 14 unofficial seasons. The original is a deadpan civic-style poster that gets passed around when someone moves here. This is the poster with weather.
+
+[Live → onk.io](https://onk.io)
+
+## The pitch
+
+The poster is funny because it's serious. Bone-dry municipal layout, civic "EXPECT:" mood notes, and 14 named seasons that range from the obvious (The Dark Wet) to the absurd (Paralyzing Snow, ¼ inch). Static, on a fridge, it makes you laugh once. Animated, the joke gets to keep working as Seattle moves through the year.
+
+Drag the year wheel along the bottom and the canvas drenches into each season's mood: Smoke goes apocalypse orange, Glorious Sun blasts gold, Flowering Wet rains cherry-blossom petals, Spiders has a couple of them descend on threads, Junuary stays grey (the joke is nothing happens). The civic chrome — masthead, advisory stamp, Today marker — never reflows; the atmosphere underneath does.
+
+## Design objectives
+
+Lifted from the original design brief:
+
+- **Civic chrome, drenched scenes.** Two color strategies at odds: a restrained navy + cream frame on top, a fully drenched seasonal palette below. The tension is the design.
+- **The poster's voice is preserved verbatim.** Every "EXPECT:" line, every asterisked footnote — those are the joke. The copy didn't get rewritten.
+- **The year wheel scrubber IS the interaction.** Drag, scroll, swipe, or use the arrow keys. The fact that the year ends with The Dark Wet returning at week 45 — the visual loop point on the scrubber — is the punchline made interactive.
+- **No card grids, no slop.** Typography sidesteps the AI-default fonts (Inter, Plex, Fraunces, et al) in favor of Khand, Fragment Mono, and Nippo. Color is OKLCH. Motion is ease-out-quart, no bounce.
+- **Production-polished single page.** One HTML file, atmospheric per-season scenes, smooth motion, real `role="slider"` with full keyboard parity, mobile swipe, and a reduced-motion path.
+
+## Architecture
+
+| File | Role |
+|---|---|
+| `index.html` | Semantic chrome, scrubber rig, content layer, inline Space Needle SVG |
+| `style.css` | OKLCH season palette, three-layer z-stack, reveal sequence, motion tokens |
+| `app.js` | 14-season data, scrubber controller, particle engine, Web Audio engine |
+| `favicon.svg` + family | 14-segment year wheel with a Space Needle silhouette at center |
+| `site.webmanifest` | PWA manifest (navy theme, cream background) |
+
+### Three z-layers
+
+0. **Backdrop drench** (`#drench`) — OKLCH gradient set per season, transitions over 900ms with `ease-out-quart`.
+1. **Canvas particles** (`#scene`) — 12 named particle systems sharing a single canvas. Seasons compose multiple layers (Molding Wet = fog + corner mold patches + spores; Spiders = corner webs + descending spiders; Flowering Wet = pollen haze + cherry-blossom petals).
+2. **Civic chrome + content** — masthead, "Right Now" advisory button, persistent Today marker on the scrubber, big season name + body + civic-red EXPECT seal.
+
+### Audio
+
+Synthesized via Web Audio — no WAV files are shipped. A single white-noise source feeds a biquad filter and a gain node. Per-season presets:
+
+- `rain-heavy` — bandpass 1800 Hz, narrow Q
+- `rain-light` — lowpass 1200 Hz
+- `snow` — highpass 6 kHz sparkle
+- `smoke` — lowpass 600 Hz with an LFO modulating the cutoff (wind)
+- `sun-rays` — lowpass 240 Hz drone
+- `silence` — gain → 0 (Junuary's joke)
+
+Off by default; toggle with `M` or the speaker icon.
+
+## Run locally
+
+It's flat files. Any static server will do:
+
+```sh
+python3 -m http.server 8765
+# then visit http://localhost:8765
+```
+
+`file://` won't work because `app.js` is loaded as an ES module.
+
+## Keyboard
+
+| Key | Action |
+|---|---|
+| ← / → | Step one season |
+| Home / End | Jump to the first / last week of the year |
+| Page Up / Down | Skip ±4 weeks |
+| `M` | Toggle ambient audio |
+| `R` | Jump to today |
+
+## Seasons by week
+
+| # | Season | Weeks | EXPECT |
+|---|---|---|---|
+| 1  | The Dark Wet | 1–7 | Rain, gray skies, and deep thoughts |
+| 2  | Paralyzing Snow | 8–9 | Panic, abandoned hatchbacks, and joy |
+| 3  | Brightening Wet | 10–13 | Rain, but make it optimistic |
+| 4  | Suncadia Break\* | 14 | Crowds, traffic, and regret for not leaving sooner |
+| 5  | Molding Wet | 15–18 | Moss, mushrooms, and mystery smells |
+| 6  | Flowering Wet | 19–22 | Blooms, allergies, the audacity of pollen |
+| 7  | Junuary | 23–25 | Confusion, layers, and a somber gloom |
+| 8  | Glorious Sun | 26–29 | Vitamin D, crowds, and mild sunburn |
+| 9  | Oppressive Sun | 30–32 | Complaints, AC envy, and melted patience |
+| 10 | Smoke | 33–36 | Air filters, cancellations, and indoor everything |
+| 11 | Welcome Drizzle | 37–39 | Light rain, deep sighs, and high acceptance |
+| 12 | Spiders | 40–42 | Webs, jump scares, and dramatic exits |
+| 13 | Convergence Zones | 43–45 | Chaos, micro-climates, and weird traffic |
+| 14 | The Dark Wet (returns) | 46–52 | Peace, familiarity, and a warm hoodie |
+
+\* Not a typo.
+
+## Credits
+
+- Concept: the original "Seattle Seasons" advisory poster (anonymous civic humorist). Source PNG kept locally as a design reference; gitignored.
+- Site by [Dave](https://onk.io).
+- Built with Claude Code and the `impeccable` design skill.

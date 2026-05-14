@@ -1,0 +1,48 @@
+# ---- macOS ----
+.DS_Store
+**/.DS_Store
+._*
+.AppleDouble
+.LSOverride
+Icon?
+
+# ---- Editor / IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+.cursorignore
+.cursor/
+
+# ---- Node (in case tooling is added later) ----
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npm
+.yarn
+.pnpm-store/
+
+# ---- Logs & scratch ----
+*.log
+npm-debug.log*
+.cache/
+.tmp/
+*.tmp
+
+# ---- Windows / Linux junk ----
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ---- Env / secrets ----
+.env
+.env.*
+!.env.example
+
+# ---- Claude Code local config ----
+.claude/
+
+# ---- Design source reference (third-party image, kept local only) ----
+City of Seattle Advisory Poster.png
