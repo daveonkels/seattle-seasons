@@ -26,11 +26,12 @@ Lifted from the original design brief:
 
 | File | Role |
 |---|---|
-| `index.html` | Semantic chrome, scrubber rig, content layer, inline Space Needle SVG |
-| `style.css` | OKLCH season palette, three-layer z-stack, reveal sequence, motion tokens |
-| `app.js` | 14-season data, scrubber controller, particle engine, Web Audio engine |
-| `favicon.svg` + family | 14-segment year wheel with a Space Needle silhouette at center |
-| `site.webmanifest` | PWA manifest (navy theme, cream background) |
+| `public/index.html` | Semantic chrome, scrubber rig, content layer, inline Space Needle SVG |
+| `public/style.css` | OKLCH season palette, three-layer z-stack, reveal sequence, motion tokens |
+| `public/app.js` | 14-season data, scrubber controller, particle engine, Web Audio engine |
+| `public/favicon.svg` + PNG/ICO family | 14-segment year wheel with a Space Needle silhouette at center |
+| `public/site.webmanifest` | PWA manifest (navy theme, cream background) |
+| `README.md`, `.gitignore` | Repo-only |
 
 ### Three z-layers
 
@@ -53,10 +54,10 @@ Off by default; toggle with `M` or the speaker icon.
 
 ## Run locally
 
-It's flat files. Any static server will do:
+The site lives in `public/` so the deploy target can `git pull` straight into the document root with no rsync step. Serve that directory:
 
 ```sh
-python3 -m http.server 8765
+python3 -m http.server -d public 8765
 # then visit http://localhost:8765
 ```
 
