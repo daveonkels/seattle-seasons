@@ -4,13 +4,13 @@
 
 An interactive field guide to Seattle's 14 unofficial seasons. The original is a deadpan civic-style poster that gets passed around when someone moves here. This is the poster with weather.
 
-[Live → onk.io](https://onk.io)
+[Live → seattle.onk.io](https://seattle.onk.io)
 
 ## The pitch
 
 The poster is funny because it's serious. Bone-dry municipal layout, civic "EXPECT:" mood notes, and 14 named seasons that range from the obvious (The Dark Wet) to the absurd (Paralyzing Snow, ¼ inch). Static, on a fridge, it makes you laugh once. Animated, the joke gets to keep working as Seattle moves through the year.
 
-Drag the year wheel along the bottom and the canvas drenches into each season's mood: Smoke goes apocalypse orange, Glorious Sun blasts gold, Flowering Wet rains cherry-blossom petals, Spiders has a couple of them descend on threads, Junuary stays grey (the joke is nothing happens). The civic chrome — masthead, advisory stamp, Today marker — never reflows; the atmosphere underneath does.
+Drag the year wheel along the bottom and the canvas drenches into each season's mood: Smoke goes apocalypse orange, Glorious Sun blasts gold, Flowering Wet rains cherry-blossom petals, Spiders has a couple of them descend on threads, Junuary stays grey (the joke is nothing happens). The civic chrome — masthead, "Right Now" advisory, Today marker — never reflows; the atmosphere underneath does.
 
 ## Design objectives
 
@@ -37,7 +37,7 @@ Lifted from the original design brief:
 
 0. **Backdrop drench** (`#drench`) — OKLCH gradient set per season, transitions over 900ms with `ease-out-quart`.
 1. **Canvas particles** (`#scene`) — 12 named particle systems sharing a single canvas. Seasons compose multiple layers (Molding Wet = fog + corner mold patches + spores; Spiders = corner webs + descending spiders; Flowering Wet = pollen haze + cherry-blossom petals).
-2. **Civic chrome + content** — masthead, "Right Now" advisory button, persistent Today marker on the scrubber, big season name + body + civic-red EXPECT seal.
+2. **Civic chrome + content** — masthead, "Right Now" advisory button (click it to jump to today), persistent Today marker on the scrubber, big season name + body + civic-red `EXPECT` kicker. The civic-red itself adapts per season (`--season-red`): lifts on dark scenes, deepens on bright ones, so contrast holds across all 14 drenches.
 
 ### Audio
 
@@ -65,11 +65,13 @@ python3 -m http.server -d public 8765
 
 ## Keyboard
 
+Arrow keys, `M`, and `R` work anywhere on the page. `Home`, `End`, `PageUp`, and `PageDown` require the scrubber handle to have focus (standard slider conventions).
+
 | Key | Action |
 |---|---|
-| ← / → | Step one season |
-| Home / End | Jump to the first / last week of the year |
-| Page Up / Down | Skip ±4 weeks |
+| ← / → (or ↑ / ↓) | Step one season, wrapping at the year boundary |
+| `Home` / `End` | Jump to the first / last week of the year (slider focused) |
+| `PageUp` / `PageDown` | Skip ±4 weeks (slider focused) |
 | `M` | Toggle ambient audio |
 | `R` | Jump to today |
 
