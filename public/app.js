@@ -993,11 +993,14 @@ window.addEventListener('wheel', (e) => {
   e.preventDefault();
 }, { passive: false });
 
-// Touch swipe on the canvas (not just the scrubber)
+// Touch swipe on the canvas (not just the scrubber).
+// Skip when the touch lands on the scrubber, a button, or a link — those
+// have their own handlers and the two were fighting each other on iOS.
 let touchStartX = null;
 let touchStartPos = null;
 canvas.parentElement.addEventListener('touchstart', (e) => {
   if (e.touches.length !== 1) return;
+  if (e.target.closest('button, a, .scrubber, [role="slider"]')) return;
   touchStartX = e.touches[0].clientX;
   touchStartPos = position;
 }, { passive: true });
@@ -1012,21 +1015,25 @@ window.addEventListener('touchend', () => {
   onPointerUp();
 });
 
-// Keyboard
+function stepToNextSeason(dir) {
+  const idx = SEASONS.findIndex(s => s.id === activeId);
+  const nextIdx = (idx + dir + SEASONS.length) % SEASONS.length;
+  const next = SEASONS[nextIdx];
+  const center = (next.weekStart + next.weekEnd) / 2;
+  animateTo(center, 500, true);
+}
+
+function jumpToNow() {
+  const w = currentWeekOfYear();
+  const s = seasonByWeek(w);
+  const center = (s.weekStart + s.weekEnd) / 2;
+  animateTo(center, 700, true);
+}
+
+// Slider-conventional keys — only when the handle has focus
 handle.addEventListener('keydown', (e) => {
   let handled = true;
-  const stepToNextSeason = (dir) => {
-    const idx = SEASONS.findIndex(s => s.id === activeId);
-    const nextIdx = (idx + dir + SEASONS.length) % SEASONS.length;
-    const next = SEASONS[nextIdx];
-    const center = (next.weekStart + next.weekEnd) / 2;
-    animateTo(center, 500, true);
-  };
   switch (e.key) {
-    case 'ArrowRight':
-    case 'ArrowUp':   stepToNextSeason(1); break;
-    case 'ArrowLeft':
-    case 'ArrowDown': stepToNextSeason(-1); break;
     case 'Home': animateTo(0, 600, true); break;
     case 'End':  animateTo(51, 600, true); break;
     case 'PageUp':   setPosition(position + 4, { fromUser: true }); break;
@@ -1036,18 +1043,25 @@ handle.addEventListener('keydown', (e) => {
   if (handled) e.preventDefault();
 });
 
-function jumpToNow() {
-  const w = currentWeekOfYear();
-  const s = seasonByWeek(w);
-  const center = (s.weekStart + s.weekEnd) / 2;
-  animateTo(center, 700, true);
-}
-
-// Global keyboard
+// Global keyboard — arrows navigate seasons from anywhere on the page
 window.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (e.key === 'm' || e.key === 'M') { audioBtn.click(); }
-  if (e.key === 'r' || e.key === 'R') { jumpToNow(); }
+  const t = e.target;
+  if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return;
+  // Let modifier-combos (e.g. cmd+arrow) pass through to the browser
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  let handled = true;
+  switch (e.key) {
+    case 'ArrowRight':
+    case 'ArrowUp':   stepToNextSeason(1); break;
+    case 'ArrowLeft':
+    case 'ArrowDown': stepToNextSeason(-1); break;
+    case 'm':
+    case 'M': audioBtn.click(); break;
+    case 'r':
+    case 'R': jumpToNow(); break;
+    default: handled = false;
+  }
+  if (handled) e.preventDefault();
 });
 
 function animateTo(target, dur = 500, fromUser = false) {
