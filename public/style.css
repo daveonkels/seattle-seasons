@@ -199,16 +199,6 @@ body[data-season="convergence-zones"] .advisory__prefix {
   text-align: right;
 }
 
-.chrome__city {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: var(--t-step);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0.85;
-  margin-bottom: 0.55em;
-}
-
 .chrome__title {
   font-family: var(--font-display);
   font-weight: 400;
