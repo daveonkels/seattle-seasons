@@ -2,15 +2,26 @@
 
 > A Guide for New Arrivals
 
+<img src="docs/seattle-seasons-poster.png" alt="The original Seattle Seasons advisory poster" width="240" align="right">
+
 An interactive field guide to Seattle's 14 unofficial seasons. The original is a deadpan civic-style poster that gets passed around when someone moves here. This is the poster with weather.
 
 [Live → seattle.onk.io](https://seattle.onk.io)
+
+<br clear="all">
+
+![The Dark Wet — the year opens here](docs/screenshots/01-dark-wet.png)
 
 ## The pitch
 
 The poster is funny because it's serious. Bone-dry municipal layout, civic "EXPECT:" mood notes, and 14 named seasons that range from the obvious (The Dark Wet) to the absurd (Paralyzing Snow, ¼ inch). Static, on a fridge, it makes you laugh once. Animated, the joke gets to keep working as Seattle moves through the year.
 
 Drag the year wheel along the bottom and the canvas drenches into each season's mood: Smoke goes apocalypse orange, Glorious Sun blasts gold, Flowering Wet rains cherry-blossom petals, Spiders has a couple of them descend on threads, Jünuary stays grey (the joke is nothing happens). The civic chrome — masthead, "Right Now" advisory, Today marker — never reflows; the atmosphere underneath does.
+
+|  |  |
+|---|---|
+| ![Paralyzing Snow — week 8–9](docs/screenshots/02-paralyzing-snow.png) | ![Flowering Wet — week 19–22](docs/screenshots/03-flowering-wet.png) |
+| ![Glorious Sun — week 26–29](docs/screenshots/04-glorious-sun.png) | ![Smoke — week 33–36](docs/screenshots/05-smoke.png) |
 
 ## Design objectives
 
@@ -94,6 +105,6 @@ Arrow keys, `M`, and `R` work anywhere on the page. `Home`, `End`, `PageUp`, and
 
 ## Credits
 
-- Concept: the original "Seattle Seasons" advisory poster (anonymous civic humorist). Source PNG kept locally as a design reference; gitignored.
+- Concept: the original "Seattle Seasons" advisory poster (anonymous civic humorist) — source PNG in [`docs/seattle-seasons-poster.png`](docs/seattle-seasons-poster.png).
 - Site by [Dave](https://onk.io).
 - Built with Claude Code and the `impeccable` design skill.

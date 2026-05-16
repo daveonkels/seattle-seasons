@@ -1406,10 +1406,17 @@ function boot() {
   displayPos = startWeek;
   setPosition(startWeek);
   updateHandle(true);
-  // Reveal sequence
-  requestAnimationFrame(() => {
+  // Reveal sequence (skipped in ?cap=1 capture mode so headless screenshots are deterministic)
+  const captureMode = new URLSearchParams(location.search).get('cap') === '1';
+  if (captureMode) {
+    document.head.insertAdjacentHTML('beforeend',
+      '<style id="cap-mode">body[data-loaded="true"] .chrome,body[data-loaded="true"] .scrubber,body[data-loaded="true"] .skyline,body[data-loaded="true"] .content,body[data-loaded="true"] .reveal-word,body[data-loaded="true"] .content__title,body[data-loaded="true"] .content__body,body[data-loaded="true"] .content__footnote,body[data-loaded="true"] .stamp__label,body[data-loaded="true"] .stamp__text{transition-delay:0ms!important;transition-duration:0ms!important;opacity:1!important;transform:none!important}</style>');
     body.dataset.loaded = 'true';
-  });
+  } else {
+    requestAnimationFrame(() => {
+      body.dataset.loaded = 'true';
+    });
+  }
 }
 
 window.addEventListener('hashchange', () => {
