@@ -34,7 +34,7 @@
   --t-step: clamp(0.7rem, 0.65rem + 0.2vw, 0.78rem);
   --t-body: clamp(0.95rem, 0.85rem + 0.4vw, 1.1rem);
   --t-lede: clamp(1.1rem, 0.9rem + 1vw, 1.55rem);
-  --t-title: clamp(3.2rem, 4rem + 8vw, 14rem);
+  --t-title: 8rem;
   --t-masthead: clamp(1.8rem, 1.4rem + 2.4vw, 3.4rem);
 
   /* Spacing scale */
@@ -973,15 +973,6 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
 .content__body  { transition-delay: 120ms; }
 .content__footnote { transition-delay: 180ms; }
 .stamp          { transition-delay: 200ms; }
-
-/* ==========================================================================
-   Wide screens — title gets too operatic past ~1400px
-   ========================================================================== */
-@media (min-width: 1400px) {
-  :root {
-    --t-title: clamp(8rem, 2.4rem + 6.4vw, 11.2rem);
-  }
-}
 
 /* ==========================================================================
    Mobile
