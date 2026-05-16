@@ -239,61 +239,6 @@ const aboutBtn = $('about-btn');
 const aboutModal = $('about-modal');
 const aboutClose = $('about-close');
 const todayMarker = $('scrubber-today');
-const fontChip = $('font-chip');
-const fontChipName = $('font-chip-name');
-const fontChipFaces = $('font-chip-faces');
-
-// ---------- Type-system A/B/C toggle -------------------------------------
-// Each system is a complete pairing — display + body + mono — so the type
-// can be tested as a system, not just a body-font swap.
-
-const TYPE_SYSTEMS = [
-  { id: null,                 label: 'Original',          display: 'Khand',                 body: 'Nippo',          mono: 'Fragment Mono' },
-  { id: 'civic-serif',        label: 'Civic Serif',       display: 'Khand',                 body: 'Source Serif 4', mono: 'Fragment Mono' },
-  { id: 'indie-press',        label: 'Indie Press',       display: 'Khand',                 body: 'Author',         mono: 'Fragment Mono' },
-  { id: 'literary',           label: 'Literary Civic',    display: 'Khand',                 body: 'Literata',       mono: 'Fragment Mono' },
-  { id: 'modernist-sans',     label: 'Modernist Sans',    display: 'Khand',                 body: 'Switzer',        mono: 'Fragment Mono' },
-  { id: 'federal-bulletin',   label: 'Federal Bulletin',  display: 'Tanker',                body: 'Source Serif 4', mono: 'Fragment Mono' },
-  { id: 'american-civic',     label: 'American Civic',    display: 'Anton',                 body: 'Source Serif 4', mono: 'Fragment Mono' },
-  { id: 'heavy-industrial',   label: 'Heavy Industrial',  display: 'Big Shoulders',         body: 'Author',         mono: 'Fragment Mono' },
-  { id: 'hand-set',           label: 'Hand-Set Classic',  display: 'Stardom',               body: 'Literata',       mono: 'Fragment Mono' },
-  { id: 'stencil',            label: 'Stencil Bulletin',  display: 'Bespoke Stencil',       body: 'Source Serif 4', mono: 'Fragment Mono' },
-  { id: 'editorial',          label: 'Editorial Display', display: 'Zodiak',                body: 'Literata',       mono: 'Fragment Mono' }
-];
-let fontChipTimer = null;
-function applyTypeSystem(id, { showChip = false } = {}) {
-  if (id) body.dataset.typeSystem = id;
-  else delete body.dataset.typeSystem;
-  const sys = TYPE_SYSTEMS.find(s => s.id === id) || TYPE_SYSTEMS[0];
-  if (fontChip) {
-    fontChip.hidden = false;
-    fontChipName.textContent = sys.label;
-    fontChipFaces.textContent = `${sys.display} · ${sys.body} · ${sys.mono}`;
-    if (showChip) {
-      fontChip.dataset.state = 'visible';
-      clearTimeout(fontChipTimer);
-      fontChipTimer = setTimeout(() => { fontChip.dataset.state = ''; }, 2400);
-    }
-  }
-  // Reflect in URL for shareable comparison
-  const url = new URL(location.href);
-  if (id) url.searchParams.set('type', id);
-  else url.searchParams.delete('type');
-  url.searchParams.delete('font'); // remove legacy param if present
-  history.replaceState(null, '', url.toString().replace(location.origin, '') || '/');
-}
-function cycleTypeSystem() {
-  const current = body.dataset.typeSystem || null;
-  const idx = TYPE_SYSTEMS.findIndex(s => s.id === current);
-  const next = TYPE_SYSTEMS[(idx + 1) % TYPE_SYSTEMS.length];
-  applyTypeSystem(next.id, { showChip: true });
-}
-(function initTypeSystem() {
-  const params = new URLSearchParams(location.search);
-  const id = params.get('type') || params.get('font'); // tolerate the older param
-  const valid = TYPE_SYSTEMS.some(s => s.id === id);
-  if (valid && id) applyTypeSystem(id, { showChip: true });
-})();
 
 // ---------- Render scrubber decorations -----------------------------------
 
@@ -1203,8 +1148,6 @@ window.addEventListener('keydown', (e) => {
     case 'M': audioBtn.click(); break;
     case 'r':
     case 'R': jumpToNow(); break;
-    case 'f':
-    case 'F': cycleTypeSystem(); break;
     default: handled = false;
   }
   if (handled) e.preventDefault();
