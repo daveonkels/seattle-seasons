@@ -9,6 +9,7 @@ An interactive field guide to Seattle's 14 unofficial seasons. The original is a
 [Live → seattle.onk.io](https://seattle.onk.io)
 
 <br clear="all">
+<br>
 
 ![The Dark Wet — the year opens here](docs/screenshots/01-dark-wet.png)
 
