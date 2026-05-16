@@ -54,10 +54,19 @@
     </div>
     <button class="advisory" id="advisory-btn" type="button" aria-label="Go to the current week">
       <span class="advisory__text" aria-live="polite">
-        <span class="advisory__prefix">Currently:</span>
-        <span id="right-now-week">Week ——</span>
-        <span aria-hidden="true"> - </span>
-        <span id="right-now-season">—</span>
+        <span class="advisory__label">Current Conditions:</span>
+        <span class="advisory__group">
+          <span class="advisory__icon" id="wx-icon" aria-hidden="true"></span>
+          <span id="wx-temp">—°</span>
+          <span class="advisory__sep" aria-hidden="true">·</span>
+          <span id="wx-cond">—</span>
+          <span class="advisory__sep" aria-hidden="true">·</span>
+          <span id="wx-clouds">—% cloud</span>
+          <span class="advisory__sep" aria-hidden="true">·</span>
+          <span id="wx-uv">UV —</span>
+          <span class="advisory__sep" aria-hidden="true">·</span>
+          <span class="advisory__season">(<span id="right-now-season">—</span>)</span>
+        </span>
       </span>
     </button>
   </div>

@@ -168,8 +168,7 @@ body[data-season="convergence-zones"] .chrome__corner--tr,
 body[data-season="convergence-zones"] .stamp {
   color: oklch(22% 0.07 55);
 }
-body[data-season="convergence-zones"] .stamp__label,
-body[data-season="convergence-zones"] .advisory__prefix {
+body[data-season="convergence-zones"] .stamp__label {
   color: oklch(34% 0.18 28);
 }
 
@@ -250,11 +249,41 @@ body[data-season="convergence-zones"] .advisory__prefix {
   outline-offset: 3px;
 }
 .advisory__text {
-  text-wrap: balance;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  justify-content: flex-end;
+  align-items: center;
 }
-.advisory__prefix {
-  color: var(--season-red);
-  transition: color var(--drench-ms) var(--ease-out-quart);
+.advisory__label {
+  /* Inherits advisory color — no longer the civic-red kicker. */
+}
+.advisory__group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  align-items: center;
+  justify-content: flex-end;
+}
+.advisory__sep {
+  opacity: 0.45;
+}
+.advisory__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+}
+.advisory__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.advisory__icon[data-state="live"] svg { animation: wx-pulse 2.8s var(--ease-out-quart) infinite; }
+@keyframes wx-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 
 /* ==========================================================================

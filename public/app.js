@@ -231,7 +231,6 @@ const elFootnote = $('season-footnote');
 const elStampText = $('stamp-text');
 const elContent = $('content');
 const elRightNowSeason = $('right-now-season');
-const elRightNowWeek = $('right-now-week');
 const audioBtn = $('audio-toggle');
 const advisoryBtn = $('advisory-btn');
 const shareBtn = $('share-btn');
@@ -1188,13 +1187,103 @@ function updateRightNowStamp() {
   const w = currentWeekOfYear();
   const s = seasonByWeek(w);
   elRightNowSeason.textContent = s.name;
-  elRightNowWeek.textContent = `Week ${w + 1}`;
   advisoryBtn.setAttribute('aria-label', `Go to the current week: Week ${w + 1}, ${s.name}`);
   // The persistent today marker on the scrubber tracks the same week
   todayMarker.style.left = `${(w / 52) * 100}%`;
 }
 updateRightNowStamp();
 setInterval(updateRightNowStamp, 1000 * 60 * 60);
+
+// ---------- Live weather (Open-Meteo, no API key) -------------------------
+// Seattle coordinates; pulls temp, weather_code, cloud_cover, uv_index.
+
+const WX_ENDPOINT =
+  'https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321' +
+  '&current=temperature_2m,weather_code,cloud_cover,uv_index' +
+  '&temperature_unit=fahrenheit&timezone=America/Los_Angeles';
+
+// WMO weather codes → condition label + icon family. Codes per the WMO
+// 4677 table that Open-Meteo follows.
+const WMO_CODES = {
+  0:  { label: 'Clear',           icon: 'sun' },
+  1:  { label: 'Mostly clear',    icon: 'sun' },
+  2:  { label: 'Partly cloudy',   icon: 'partly-cloudy' },
+  3:  { label: 'Overcast',        icon: 'cloud' },
+  45: { label: 'Fog',             icon: 'fog' },
+  48: { label: 'Rime fog',        icon: 'fog' },
+  51: { label: 'Light drizzle',   icon: 'rain' },
+  53: { label: 'Drizzle',         icon: 'rain' },
+  55: { label: 'Heavy drizzle',   icon: 'rain' },
+  56: { label: 'Freezing drizzle',icon: 'rain' },
+  57: { label: 'Freezing drizzle',icon: 'rain' },
+  61: { label: 'Light rain',      icon: 'rain' },
+  63: { label: 'Rain',            icon: 'rain' },
+  65: { label: 'Heavy rain',      icon: 'rain' },
+  66: { label: 'Freezing rain',   icon: 'rain' },
+  67: { label: 'Freezing rain',   icon: 'rain' },
+  71: { label: 'Light snow',      icon: 'snow' },
+  73: { label: 'Snow',            icon: 'snow' },
+  75: { label: 'Heavy snow',      icon: 'snow' },
+  77: { label: 'Snow grains',     icon: 'snow' },
+  80: { label: 'Rain showers',    icon: 'rain' },
+  81: { label: 'Rain showers',    icon: 'rain' },
+  82: { label: 'Violent showers', icon: 'rain' },
+  85: { label: 'Snow showers',    icon: 'snow' },
+  86: { label: 'Snow showers',    icon: 'snow' },
+  95: { label: 'Thunderstorm',    icon: 'lightning' },
+  96: { label: 'Thunder + hail',  icon: 'lightning' },
+  99: { label: 'Thunder + hail',  icon: 'lightning' }
+};
+
+// Inline SVG icons (Lucide-style, MIT-licensed shapes). 24x24 viewBox,
+// stroke-based so they pick up currentColor.
+const WX_ICONS = {
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+  'partly-cloudy': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v2M5.64 5.64l1.41 1.41M2 13h2M19 6l1.41-1.41"/><circle cx="12" cy="12" r="3"/><path d="M22 17.5a3.5 3.5 0 0 1-3.5 3.5h-9a4.5 4.5 0 0 1-.78-8.93"/></svg>',
+  cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19a4.5 4.5 0 1 0-1.13-8.85 6 6 0 1 0-11.82 1.74A4 4 0 0 0 6 19h11.5z"/></svg>',
+  rain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><path d="M8 14v3M12 16v4M16 14v3"/></svg>',
+  snow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><path d="M8 18h.01M8 22h.01M12 20h.01M16 18h.01M16 22h.01M12 16h.01"/></svg>',
+  fog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h12a4 4 0 0 0 0-8 7 7 0 0 0-7 5"/><path d="M3 15h18M3 19h18"/></svg>',
+  lightning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/><path d="M13 11l-4 6h6l-4 6"/></svg>'
+};
+
+const elWxIcon = $('wx-icon');
+const elWxTemp = $('wx-temp');
+const elWxCond = $('wx-cond');
+const elWxClouds = $('wx-clouds');
+const elWxUv = $('wx-uv');
+
+function renderWeather(wx) {
+  if (!wx) return;
+  const meta = WMO_CODES[wx.weather_code] || { label: 'Unknown', icon: 'cloud' };
+  const temp = Math.round(wx.temperature_2m);
+  const clouds = Math.round(wx.cloud_cover);
+  const uv = Math.round(wx.uv_index ?? 0);
+  elWxIcon.innerHTML = WX_ICONS[meta.icon] || WX_ICONS.cloud;
+  elWxIcon.dataset.state = 'live';
+  elWxTemp.textContent = `${temp}°`;
+  elWxCond.textContent = meta.label;
+  elWxClouds.textContent = `${clouds}% cloud`;
+  elWxUv.textContent = `UV ${uv}`;
+}
+
+async function fetchWeather() {
+  try {
+    const res = await fetch(WX_ENDPOINT, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.current || null;
+  } catch {
+    return null;
+  }
+}
+
+async function pollWeather() {
+  const wx = await fetchWeather();
+  renderWeather(wx);
+}
+pollWeather();
+setInterval(pollWeather, 15 * 60 * 1000); // refresh every 15 minutes
 
 // ---------- Buttons -------------------------------------------------------
 
