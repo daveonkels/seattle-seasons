@@ -1071,13 +1071,19 @@ window.addEventListener('pointerup', onPointerUp);
 window.addEventListener('pointercancel', onPointerUp);
 
 // Wheel-as-scrub (anywhere on page)
+// Short seasons (≤2 weeks: Suncadia Break, Paralyzing Snow) get half-speed
+// so they don't blur past in a single wheel tick.
+const scrubSpeedAt = (week) => {
+  const s = seasonByWeek(week);
+  return (s.weekEnd - s.weekStart) <= 2 ? 0.5 : 1;
+};
 let wheelAccum = 0;
 let wheelTimer = null;
 window.addEventListener('wheel', (e) => {
   // Allow horizontal trackpad scroll; fall through to deltaY otherwise.
   const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
   if (d === 0) return;
-  wheelAccum += d * 0.012;
+  wheelAccum += d * 0.012 * scrubSpeedAt(position);
   if (Math.abs(wheelAccum) >= 0.4) {
     setPosition(position + wheelAccum, { fromUser: true });
     wheelAccum = 0;

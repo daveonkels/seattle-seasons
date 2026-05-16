@@ -734,7 +734,7 @@ body[data-mood="dark"] .content__title {
   border-top: 1px solid color-mix(in oklch, currentColor 25%, transparent);
   border-bottom: 1px solid color-mix(in oklch, currentColor 25%, transparent);
   cursor: ew-resize;
-  touch-action: pan-y;
+  touch-action: none;
 }
 
 .scrubber__ticks {
@@ -793,6 +793,7 @@ body[data-mood="dark"] .scrubber__seg.active { opacity: 1; }
   z-index: 3;
   color: var(--season-red);
   cursor: pointer;
+  touch-action: none;
   transition: color var(--drench-ms) var(--ease-out-quart);
 }
 .scrubber__today:focus-visible {
@@ -850,6 +851,7 @@ body[data-mood="dark"] .scrubber__seg.active { opacity: 1; }
   pointer-events: auto;
   outline: none;
   z-index: 2;
+  touch-action: none;
   transition: background var(--drench-ms) var(--ease-out-quart);
 }
 .scrubber__handle::before {
