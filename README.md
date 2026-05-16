@@ -10,7 +10,7 @@ An interactive field guide to Seattle's 14 unofficial seasons. The original is a
 
 The poster is funny because it's serious. Bone-dry municipal layout, civic "EXPECT:" mood notes, and 14 named seasons that range from the obvious (The Dark Wet) to the absurd (Paralyzing Snow, ¼ inch). Static, on a fridge, it makes you laugh once. Animated, the joke gets to keep working as Seattle moves through the year.
 
-Drag the year wheel along the bottom and the canvas drenches into each season's mood: Smoke goes apocalypse orange, Glorious Sun blasts gold, Flowering Wet rains cherry-blossom petals, Spiders has a couple of them descend on threads, Junuary stays grey (the joke is nothing happens). The civic chrome — masthead, "Right Now" advisory, Today marker — never reflows; the atmosphere underneath does.
+Drag the year wheel along the bottom and the canvas drenches into each season's mood: Smoke goes apocalypse orange, Glorious Sun blasts gold, Flowering Wet rains cherry-blossom petals, Spiders has a couple of them descend on threads, Jünuary stays grey (the joke is nothing happens). The civic chrome — masthead, "Right Now" advisory, Today marker — never reflows; the atmosphere underneath does.
 
 ## Design objectives
 
@@ -48,7 +48,7 @@ Synthesized via Web Audio — no WAV files are shipped. A single white-noise sou
 - `snow` — highpass 6 kHz sparkle
 - `smoke` — lowpass 600 Hz with an LFO modulating the cutoff (wind)
 - `sun-rays` — lowpass 240 Hz drone
-- `silence` — gain → 0 (Junuary's joke)
+- `silence` — gain → 0 (Jünuary's joke)
 
 Off by default; toggle with `M` or the speaker icon.
 
@@ -85,7 +85,7 @@ Arrow keys, `M`, and `R` work anywhere on the page. `Home`, `End`, `PageUp`, and
 | 4  | Suncadia Break\* | 14 | Crowds, traffic, and regret for not leaving sooner |
 | 5  | Molding Wet | 15–18 | Moss, mushrooms, and mystery smells |
 | 6  | Flowering Wet | 19–22 | Blooms, allergies, the audacity of pollen |
-| 7  | Junuary | 23–25 | Confusion, layers, and a somber gloom |
+| 7  | Jünuary | 23–25 | Confusion, layers, and a somber gloom |
 | 8  | Glorious Sun | 26–29 | Vitamin D, crowds, and mild sunburn |
 | 9  | Oppressive Sun | 30–32 | Complaints, AC envy, and melted patience |
 | 10 | Smoke | 33–36 | Air filters, cancellations, and indoor everything |

@@ -85,7 +85,7 @@ const SEASONS = [
   },
   {
     id: 'junuary',
-    name: 'Junuary',
+    name: 'Jünuary',
     subtitle: 'Sprinkled with disappointment',
     body: 'Cold. Gray. June, but cosplaying as January.',
     footnote: 'Are we serious?',
