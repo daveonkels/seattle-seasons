@@ -1,6 +1,6 @@
 # Seattle Seasons
 
-> A Helpful Guide for New Arrivals
+> A Guide for New Arrivals
 
 An interactive field guide to Seattle's 14 unofficial seasons. The original is a deadpan civic-style poster that gets passed around when someone moves here. This is the poster with weather.
 
