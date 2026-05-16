@@ -1039,19 +1039,16 @@ function trackPxToWeek(px) {
 }
 
 let dragging = false;
-function onPointerDown(e) {
-  if (e.button !== undefined && e.button !== 0) return;
+function beginDrag(clientX) {
   dragging = true;
   body.classList.add('is-dragging');
-  handle.setPointerCapture?.(e.pointerId);
-  setPosition(trackPxToWeek(e.clientX), { fromUser: true });
-  e.preventDefault();
+  setPosition(trackPxToWeek(clientX), { fromUser: true });
 }
-function onPointerMove(e) {
+function continueDrag(clientX) {
   if (!dragging) return;
-  setPosition(trackPxToWeek(e.clientX), { fromUser: true });
+  setPosition(trackPxToWeek(clientX), { fromUser: true });
 }
-function onPointerUp() {
+function endDrag() {
   if (!dragging) return;
   dragging = false;
   body.classList.remove('is-dragging');
@@ -1065,10 +1062,47 @@ function onPointerUp() {
     animateTo(center, 400);
   }
 }
+
+// Mouse/pen: pointer events. Touch: explicit touch events below (more
+// reliable than pointer events on iOS Safari for the first interaction
+// with a CSS-revealed element).
+function onPointerDown(e) {
+  if (e.button !== undefined && e.button !== 0) return;
+  if (e.pointerType === 'touch') return;
+  handle.setPointerCapture?.(e.pointerId);
+  beginDrag(e.clientX);
+  e.preventDefault();
+}
+function onPointerMove(e) {
+  if (e.pointerType === 'touch') return;
+  continueDrag(e.clientX);
+}
+function onPointerUp(e) {
+  if (e && e.pointerType === 'touch') return;
+  endDrag();
+}
+const onPointerUpAny = () => endDrag();
+
 track.addEventListener('pointerdown', onPointerDown);
 window.addEventListener('pointermove', onPointerMove);
 window.addEventListener('pointerup', onPointerUp);
 window.addEventListener('pointercancel', onPointerUp);
+
+// Touch path — iOS Safari needs this; the today-marker is exempted because
+// it has its own click handler and should not start a drag.
+track.addEventListener('touchstart', (e) => {
+  if (e.touches.length !== 1) return;
+  if (e.target.closest('.scrubber__today')) return;
+  beginDrag(e.touches[0].clientX);
+  e.preventDefault();
+}, { passive: false });
+track.addEventListener('touchmove', (e) => {
+  if (!dragging || e.touches.length !== 1) return;
+  continueDrag(e.touches[0].clientX);
+  e.preventDefault();
+}, { passive: false });
+track.addEventListener('touchend', onPointerUpAny);
+track.addEventListener('touchcancel', onPointerUpAny);
 
 // Wheel-as-scrub (anywhere on page)
 // Short seasons (≤2 weeks: Suncadia Break, Paralyzing Snow) get half-speed
