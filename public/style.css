@@ -65,17 +65,89 @@
   --handle-knob-border: 2px;
 }
 
-/* Body-font A/B/C toggle. Press F to cycle, or use ?font=source|literata|author */
-body[data-body-font="source"]   { --font-body: 'Source Serif 4', Georgia, serif; }
-body[data-body-font="literata"] { --font-body: 'Literata', Georgia, serif; }
-body[data-body-font="author"]   { --font-body: 'Author', Georgia, serif; }
+/* Type-system A/B/C toggle. Press F to cycle, or use ?type=<id>.
+   Each system declares display + body together so pairings can be tested
+   as systems, not isolated swaps. Mono (labels) stays Fragment Mono across
+   all systems — it's already correct for the civic-utility voice. */
+body[data-type-system="civic-serif"]      { --font-body: 'Source Serif 4', Georgia, serif; }
+body[data-type-system="indie-press"]      { --font-body: 'Author', Georgia, serif; }
+body[data-type-system="literary"]         { --font-body: 'Literata', Georgia, serif; }
+body[data-type-system="federal-bulletin"] {
+  --font-display: 'Tanker', 'Khand', 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+}
+body[data-type-system="modernist-sans"]   { --font-body: 'Switzer', system-ui, -apple-system, sans-serif; }
+
+body[data-type-system="american-civic"] {
+  --font-display: 'Anton', 'Khand', 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+}
+body[data-type-system="heavy-industrial"] {
+  --font-display: 'Big Shoulders', 'Khand', 'Helvetica Neue Condensed', sans-serif;
+  --font-body: 'Author', Georgia, serif;
+}
+body[data-type-system="hand-set"] {
+  --font-display: 'Stardom', 'Khand', Georgia, serif;
+  --font-body: 'Literata', Georgia, serif;
+}
+body[data-type-system="stencil"] {
+  --font-display: 'Bespoke Stencil', 'Khand', 'Helvetica Neue Condensed', sans-serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+}
+body[data-type-system="editorial"] {
+  --font-display: 'Zodiak', 'Khand', Georgia, serif;
+  --font-body: 'Literata', Georgia, serif;
+}
+
 /* Serif body needs a hair more line-height than the humanist sans does. */
-body[data-body-font="source"] .content__body,
-body[data-body-font="literata"] .content__body,
-body[data-body-font="author"] .content__body { line-height: 1.5; }
-body[data-body-font="source"] .stamp__text,
-body[data-body-font="literata"] .stamp__text,
-body[data-body-font="author"] .stamp__text { line-height: 1.55; }
+body[data-type-system="civic-serif"] .content__body,
+body[data-type-system="indie-press"] .content__body,
+body[data-type-system="literary"] .content__body,
+body[data-type-system="federal-bulletin"] .content__body { line-height: 1.5; }
+body[data-type-system="civic-serif"] .stamp__text,
+body[data-type-system="indie-press"] .stamp__text,
+body[data-type-system="literary"] .stamp__text,
+body[data-type-system="federal-bulletin"] .stamp__text { line-height: 1.55; }
+
+/* Per-system display tuning. Each display face has different weight axes
+   and proportions; the Khand weight tokens (500/600) don't translate, so
+   neutralize and adjust tracking face by face. */
+body[data-type-system="federal-bulletin"] .chrome__title,
+body[data-type-system="federal-bulletin"] .content__title,
+body[data-type-system="federal-bulletin"] .about-modal__title {
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+body[data-type-system="american-civic"] .chrome__title,
+body[data-type-system="american-civic"] .content__title,
+body[data-type-system="american-civic"] .about-modal__title {
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+body[data-type-system="heavy-industrial"] .chrome__title,
+body[data-type-system="heavy-industrial"] .content__title,
+body[data-type-system="heavy-industrial"] .about-modal__title {
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+body[data-type-system="hand-set"] .chrome__title,
+body[data-type-system="hand-set"] .content__title,
+body[data-type-system="hand-set"] .about-modal__title {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+body[data-type-system="stencil"] .chrome__title,
+body[data-type-system="stencil"] .content__title,
+body[data-type-system="stencil"] .about-modal__title {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+body[data-type-system="editorial"] .chrome__title,
+body[data-type-system="editorial"] .content__title,
+body[data-type-system="editorial"] .about-modal__title {
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
 
 /* Civic-red contrast adapts to scene mood. Hue locked at 28; only L shifts.
    Bright/neutral push deeper than instinct suggests because the kicker sits on
@@ -528,26 +600,28 @@ body[data-mood="dark"] .content__title {
 }
 
 /* ==========================================================================
-   Font toggle chip — bottom-left, shows active body font during the A/B/C test
+   Type-system toggle chip — bottom-left, shows active system during A/B/C test
    ========================================================================== */
 .font-chip {
   position: fixed;
   left: var(--chrome-pad);
   bottom: calc(var(--scrubber-space-h) + 0.6rem);
   z-index: 11;
-  padding: 0.45em 0.7em;
+  padding: 0.5em 0.75em;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--season-ink);
-  background: color-mix(in oklch, var(--season-a) 78%, transparent);
+  background: color-mix(in oklch, var(--season-a) 80%, transparent);
   border: 1px solid color-mix(in oklch, currentColor 28%, transparent);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   pointer-events: none;
   opacity: 0;
   transform: translateY(4px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
   transition: opacity 240ms var(--ease-out-quart),
               transform 240ms var(--ease-out-quart),
               background var(--drench-ms) var(--ease-out-quart),
@@ -557,8 +631,23 @@ body[data-mood="dark"] .content__title {
   opacity: 0.95;
   transform: translateY(0);
 }
+.font-chip__name {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+.font-chip__faces {
+  font-size: 0.55rem;
+  opacity: 0.78;
+  letter-spacing: 0.1em;
+}
 @media (max-height: 600px) {
-  .font-chip { font-size: 0.5rem; padding: 0.35em 0.6em; bottom: calc(var(--scrubber-space-h) + 0.4rem); }
+  .font-chip {
+    padding: 0.35em 0.6em;
+    bottom: calc(var(--scrubber-space-h) + 0.4rem);
+  }
+  .font-chip__name { font-size: 0.58rem; }
+  .font-chip__faces { font-size: 0.48rem; }
 }
 
 /* ==========================================================================
