@@ -80,7 +80,7 @@ const SEASONS = [
     weekStart: 18, weekEnd: 22,
     a: 'oklch(80% 0.07 355)', b: 'oklch(56% 0.09 355)',
     ink: 'oklch(22% 0.06 355)',
-    mood: 'neutral', particles: ['petal', 'pollen'], audio: 'pollen',
+    mood: 'neutral', particles: ['rain-light', 'petal', 'pollen'], audio: 'pollen',
     segColor: 'oklch(72% 0.08 355)'
   },
   {
@@ -189,19 +189,25 @@ const SEASONS = [
   }
 ];
 
+const normalizeWeek = (w) => ((w % 52) + 52) % 52;
+const clampWeekIndex = (w) => Math.min(51, Math.max(0, Math.floor(normalizeWeek(w))));
+const weekNumberFromPosition = (w) => clampWeekIndex(w) + 1;
+
 const seasonByWeek = (w) => {
-  const week = ((w % 52) + 52) % 52;
+  const week = normalizeWeek(w);
   for (const s of SEASONS) if (week >= s.weekStart && week < s.weekEnd) return s;
   return SEASONS[0];
 };
 
 const seasonById = (id) => SEASONS.find(s => s.id === id);
+const avoidLastWordWidow = (text) => text.replace(/ ([^ ]+)$/, '\u00A0$1');
 
 function currentWeekOfYear() {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const diff = (now - start) / 86400000;
-  return Math.floor(diff / 7) % 52;
+  const start = Date.UTC(now.getFullYear(), 0, 1);
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayOfYear = Math.floor((today - start) / 86400000);
+  return Math.min(51, Math.floor(dayOfYear / 7));
 }
 
 const prefersReducedMotion =
@@ -229,6 +235,9 @@ const elRightNowWeek = $('right-now-week');
 const audioBtn = $('audio-toggle');
 const advisoryBtn = $('advisory-btn');
 const shareBtn = $('share-btn');
+const aboutBtn = $('about-btn');
+const aboutModal = $('about-modal');
+const aboutClose = $('about-close');
 const todayMarker = $('scrubber-today');
 
 // ---------- Render scrubber decorations -----------------------------------
@@ -348,7 +357,10 @@ const audio = new Ambience();
 // ---------- Particle engine -----------------------------------------------
 
 let W = 0, H = 0, DPR = Math.min(window.devicePixelRatio || 1, 2);
+let canvasDirty = true;
+let frameSchedulerReady = false;
 function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
   W = window.innerWidth;
   H = window.innerHeight;
   canvas.width = Math.floor(W * DPR);
@@ -356,19 +368,20 @@ function resize() {
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  canvasDirty = true;
+  if (frameSchedulerReady) scheduleFrame();
 }
 window.addEventListener('resize', resize, { passive: true });
 resize();
 
 class Particles {
   constructor() {
-    this.modes = {};
     this.target = { 'silence': 1 };
     this.current = { 'silence': 1 };
     // Seed pools per mode (capped, reused)
     this.pools = {
-      'rain-heavy': makePool(180, mkRain),
-      'rain-light': makePool(70, mkRain),
+      'rain-heavy': makePool(86, mkRain),
+      'rain-light': makePool(58, mkRain),
       'snow': makePool(110, mkSnow),
       'smoke': makePool(36, mkSmoke),
       'sun-rays': makePool(7, mkSunRay),
@@ -377,7 +390,7 @@ class Particles {
       'pollen': makePool(80, mkPollen),
       'mold-patch': makePool(4, mkMoldPatch),
       'mold-spore': makePool(70, mkMoldSpore),
-      'petal': makePool(12, mkPetal),
+      'petal': makePool(20, mkPetal),
       'spider': makePool(2, mkSpider),
       'silence': []
     };
@@ -386,6 +399,11 @@ class Particles {
     if (typeof modes === 'string') modes = [modes];
     this.target = {};
     for (const m of modes) this.target[m] = 1;
+    if (prefersReducedMotion) {
+      this.current = { ...this.target };
+      canvasDirty = true;
+      scheduleFrame();
+    }
     // Other modes will fade to 0
   }
   step(dt) {
@@ -433,25 +451,26 @@ function makePool(n, ctor) {
 
 // --- Particle factories ---
 function mkRain(i, n) {
+  const isMist = n <= 60;
   return {
     x: Math.random() * 1.2 - 0.1,
     y: Math.random() * 1.2 - 0.1,
-    z: 0.4 + Math.random() * 0.6,
+    z: 0.35 + Math.random() * 0.65,
     step(dt, weight) {
-      const sp = 0.0011 * dt * (0.5 + this.z);
+      const sp = (isMist ? 0.00022 : 0.00028) * dt * (0.5 + this.z);
       this.y += sp;
-      this.x += sp * 0.18; // slight wind
       if (this.y > 1.05) { this.y = -0.05; this.x = Math.random() * 1.2 - 0.1; }
     },
     render(ctx, w) {
       const x = this.x * W;
       const y = this.y * H;
-      const len = 14 + this.z * 18;
-      ctx.strokeStyle = `rgba(220,235,245,${0.18 + this.z * 0.28})`;
-      ctx.lineWidth = 0.8 + this.z * 0.6;
+      const len = (isMist ? 2.5 : 3.5) + this.z * (isMist ? 3.5 : 4.5);
+      const alpha = (isMist ? 0.22 : 0.22) + this.z * (isMist ? 0.16 : 0.16);
+      ctx.strokeStyle = `rgba(245,250,255,${alpha})`;
+      ctx.lineWidth = (isMist ? 0.6 : 0.65) + this.z * 0.25;
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.lineTo(x - len * 0.18, y + len);
+      ctx.lineTo(x, y + len);
       ctx.stroke();
     }
   };
@@ -697,58 +716,62 @@ function mkMoldSpore(i, n) {
 }
 
 function mkPetal(i, n) {
-  // Cherry-blossom petals — broad with a notched tip, soft pinks
+  // Small blossoms: five-petal cherry shapes instead of loose falling leaves.
   const palette = [
-    { fill: 'rgba(255,214,224,0.85)', edge: 'rgba(220,140,165,0.35)' },
-    { fill: 'rgba(252,228,232,0.88)', edge: 'rgba(210,150,175,0.30)' },
-    { fill: 'rgba(248,194,210,0.82)', edge: 'rgba(200,120,150,0.35)' },
-    { fill: 'rgba(255,232,236,0.86)', edge: 'rgba(220,160,180,0.28)' }
+    { fill: 'rgba(255,232,240,0.9)', edge: 'rgba(194,105,145,0.24)', center: 'rgba(238,180,120,0.75)' },
+    { fill: 'rgba(252,218,232,0.88)', edge: 'rgba(184,95,132,0.22)', center: 'rgba(244,190,128,0.78)' },
+    { fill: 'rgba(255,244,248,0.86)', edge: 'rgba(204,130,160,0.20)', center: 'rgba(236,174,110,0.70)' },
+    { fill: 'rgba(248,204,222,0.84)', edge: 'rgba(176,88,124,0.24)', center: 'rgba(246,198,135,0.76)' }
   ];
   return {
     x: Math.random(),
     y: Math.random() * 1.4 - 0.4,
-    z: 0.55 + Math.random() * 0.45,
+    z: 0.45 + Math.random() * 0.55,
     drift: Math.random() * Math.PI * 2,
     rotBase: Math.random() * Math.PI * 2,
-    wobbleAmt: 0.35 + Math.random() * 0.5,
+    wobbleAmt: 0.2 + Math.random() * 0.35,
+    petals: i % 5 === 0 ? 6 : 5,
     color: palette[i % palette.length],
     step(dt) {
-      this.drift += 0.00055 * dt;
-      // Slow, languid descent
-      this.y += 0.00006 * dt * (0.5 + this.z * 0.6);
+      this.drift += 0.00038 * dt;
+      this.y += 0.000045 * dt * (0.5 + this.z * 0.6);
       // Gentle horizontal sway
-      this.x += Math.sin(this.drift) * 0.0004 * dt;
+      this.x += Math.sin(this.drift) * 0.00016 * dt;
       if (this.y > 1.15) { this.y = -0.2; this.x = Math.random(); }
     },
     render(ctx, w) {
       const x = (((this.x % 1.2) + 1.2) % 1.2) * W - W * 0.1;
       const y = this.y * H;
-      const s = 7 + this.z * 9;
-      // Wobble rotation — never spins, just rocks back and forth
+      const s = 3.8 + this.z * 5.8;
       const rot = this.rotBase + Math.sin(this.drift * 1.3) * this.wobbleAmt;
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(rot);
 
-      // Petal: broad shape with a notched tip (cherry blossom)
       ctx.fillStyle = this.color.fill;
-      ctx.beginPath();
-      ctx.moveTo(0, -s);                                             // stem base, pointed
-      ctx.bezierCurveTo(s * 0.85, -s * 0.35,
-                        s * 0.65,  s * 0.75,
-                        s * 0.18,  s * 0.92);                        // right side flares out, down to tip
-      ctx.quadraticCurveTo(0, s * 0.55, -s * 0.18, s * 0.92);        // notch / cleft at tip
-      ctx.bezierCurveTo(-s * 0.65, s * 0.75,
-                        -s * 0.85, -s * 0.35,
-                        0, -s);                                      // back to stem
-      ctx.fill();
-
-      // Soft edge tint along the cleft side for depth
       ctx.strokeStyle = this.color.edge;
-      ctx.lineWidth = 0.55;
+      ctx.lineWidth = 0.45;
+      for (let p = 0; p < this.petals; p++) {
+        ctx.save();
+        ctx.rotate((Math.PI * 2 * p) / this.petals);
+        ctx.beginPath();
+        ctx.moveTo(0, -s * 0.12);
+        ctx.bezierCurveTo(s * 0.58, -s * 0.42,
+                          s * 0.46, -s * 1.08,
+                          0, -s * 1.28);
+        ctx.bezierCurveTo(-s * 0.46, -s * 1.08,
+                          -s * 0.58, -s * 0.42,
+                          0, -s * 0.12);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.fillStyle = this.color.center;
       ctx.beginPath();
-      ctx.moveTo(s * 0.18, s * 0.92);
-      ctx.quadraticCurveTo(0, s * 0.55, -s * 0.18, s * 0.92);
+      ctx.arc(0, 0, s * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(120,55,82,0.16)';
       ctx.stroke();
 
       ctx.restore();
@@ -838,17 +861,6 @@ function mkSpider(i, n) {
 
 const particles = new Particles();
 
-// Animation loop
-let lastT = performance.now();
-function tick(t) {
-  const dt = Math.min(50, t - lastT);
-  lastT = t;
-  particles.step(dt);
-  particles.render();
-  requestAnimationFrame(tick);
-}
-requestAnimationFrame(tick);
-
 // ---------- Scrubber controller -------------------------------------------
 
 let position = 0;       // float in [0, 52)
@@ -856,44 +868,120 @@ let displayPos = 0;     // smoothed for handle motion
 let activeId = null;
 let interacted = false;
 let lastInteractionAt = performance.now();
+let activeAnimation = null;
+let contentSwapTimer = null;
+let booted = false;
+let lastT = performance.now();
+let rafId = null;
+let lastHandlePct = null;
+let lastHandleWeek = null;
+let lastHandleSeasonId = null;
+
+function scheduleFrame() {
+  if (rafId == null) rafId = requestAnimationFrame(frameLoop);
+}
+
+function shortestYearDelta(target, start) {
+  let delta = normalizeWeek(target) - normalizeWeek(start);
+  if (delta > 26) delta -= 52;
+  if (delta < -26) delta += 52;
+  return delta;
+}
+
+function cancelActiveAnimation() {
+  activeAnimation = null;
+}
+
+function stepDisplayPosition() {
+  if (prefersReducedMotion) {
+    displayPos = position;
+    updateHandle();
+    return false;
+  }
+
+  const delta = shortestYearDelta(position, displayPos);
+  if (Math.abs(delta) < 0.002) {
+    displayPos = position;
+    updateHandle();
+    return false;
+  }
+
+  displayPos = normalizeWeek(displayPos + delta * 0.18);
+  updateHandle();
+  return true;
+}
+
+function frameLoop(t) {
+  rafId = null;
+  const dt = Math.min(50, t - lastT);
+  lastT = t;
+
+  if (activeAnimation) {
+    const elapsed = t - activeAnimation.startT;
+    const progress = Math.min(1, elapsed / activeAnimation.dur);
+    const eased = 1 - Math.pow(1 - progress, 4); // ease-out-quart
+    setPosition(activeAnimation.start + activeAnimation.delta * eased, {
+      fromUser: activeAnimation.fromUser,
+      fromAnimation: true
+    });
+    if (progress === 1) activeAnimation = null;
+  }
+
+  const handleMoving = stepDisplayPosition();
+
+  if (!prefersReducedMotion) {
+    particles.step(dt);
+    particles.render();
+    scheduleFrame();
+    return;
+  }
+
+  if (canvasDirty) {
+    particles.render();
+    canvasDirty = false;
+  }
+
+  if (activeAnimation || handleMoving) scheduleFrame();
+}
+
+frameSchedulerReady = true;
+scheduleFrame();
 
 function setPosition(w, opts = {}) {
-  position = ((w % 52) + 52) % 52;
+  if (!opts.fromAnimation) cancelActiveAnimation();
+  position = normalizeWeek(w);
   const s = seasonByWeek(position);
-  updateHandle();
   if (s.id !== activeId) {
     activeId = s.id;
     applySeason(s, opts);
   }
   if (opts.fromUser) markInteracted();
+  scheduleFrame();
 }
 
-function updateHandle() {
+function updateHandle(force = false) {
   const pct = (displayPos / 52) * 100;
-  handle.style.left = pct + '%';
-  const s = seasonByWeek(displayPos);
-  handle.setAttribute('aria-valuenow', Math.round(displayPos).toString());
-  handle.setAttribute('aria-valuetext', `${s.name}, week ${Math.round(displayPos) + 1}`);
-  if (flag) flag.textContent = s.name;
-  // Active segment
-  for (const seg of segments.children) {
-    seg.classList.toggle('active', seg.dataset.id === s.id);
+  if (force || lastHandlePct == null || Math.abs(pct - lastHandlePct) > 0.01) {
+    handle.style.left = pct + '%';
+    lastHandlePct = pct;
   }
-}
 
-// Smooth handle motion (lerp)
-function smoothLoop() {
-  displayPos += (position - displayPos) * 0.18;
-  // Wrap-around shortest path
-  if (Math.abs(position - displayPos) > 26) {
-    if (position > displayPos) displayPos += 52;
-    else displayPos -= 52;
-    displayPos = ((displayPos % 52) + 52) % 52;
+  const weekNumber = weekNumberFromPosition(displayPos);
+  const s = seasonByWeek(displayPos);
+  if (force || weekNumber !== lastHandleWeek) {
+    handle.setAttribute('aria-valuenow', weekNumber.toString());
+    handle.setAttribute('aria-valuetext', `${s.name}, week ${weekNumber}`);
+    lastHandleWeek = weekNumber;
   }
-  updateHandle();
-  requestAnimationFrame(smoothLoop);
+
+  if (force || s.id !== lastHandleSeasonId) {
+    if (flag) flag.textContent = s.name;
+    for (const seg of segments.children) {
+      seg.classList.toggle('active', seg.dataset.id === s.id);
+    }
+    lastHandleSeasonId = s.id;
+  }
 }
-smoothLoop();
 
 function markInteracted() {
   if (!interacted) {
@@ -905,7 +993,7 @@ function markInteracted() {
 
 // ---------- Season application -------------------------------------------
 
-function applySeason(s, opts) {
+function applySeason(s, opts = {}) {
   // Color drench
   document.documentElement.style.setProperty('--season-a', s.a);
   document.documentElement.style.setProperty('--season-b', s.b);
@@ -914,15 +1002,18 @@ function applySeason(s, opts) {
   body.dataset.mood = s.mood;
 
   // Content swap
+  if (contentSwapTimer) clearTimeout(contentSwapTimer);
   elContent.classList.add('is-swapping');
-  setTimeout(() => {
+  const swapDelay = prefersReducedMotion ? 0 : 280;
+  contentSwapTimer = setTimeout(() => {
+    contentSwapTimer = null;
     elSubtitle.textContent = s.subtitle;
     elTitle.textContent = s.name;
-    elBody.textContent = s.body;
+    elBody.textContent = avoidLastWordWidow(s.body);
     elFootnote.textContent = s.footnote;
     elStampText.textContent = s.expect;
     requestAnimationFrame(() => elContent.classList.remove('is-swapping'));
-  }, 280);
+  }, swapDelay);
 
   // Particles
   particles.setMode(s.particles);
@@ -1025,9 +1116,7 @@ function stepToNextSeason(dir) {
 
 function jumpToNow() {
   const w = currentWeekOfYear();
-  const s = seasonByWeek(w);
-  const center = (s.weekStart + s.weekEnd) / 2;
-  animateTo(center, 700, true);
+  animateTo(w, 700, true);
 }
 
 // Slider-conventional keys — only when the handle has focus
@@ -1065,19 +1154,22 @@ window.addEventListener('keydown', (e) => {
 });
 
 function animateTo(target, dur = 500, fromUser = false) {
+  if (prefersReducedMotion || dur <= 0) {
+    setPosition(target, { fromUser });
+    displayPos = position;
+    updateHandle(true);
+    return;
+  }
+
   const start = position;
-  const startT = performance.now();
-  // Shortest path on the circular year
-  let delta = target - start;
-  if (delta > 26) delta -= 52;
-  if (delta < -26) delta += 52;
-  const animFn = (now) => {
-    const t = Math.min(1, (now - startT) / dur);
-    const eased = 1 - Math.pow(1 - t, 4); // ease-out-quart
-    setPosition(start + delta * eased, { fromUser });
-    if (t < 1) requestAnimationFrame(animFn);
+  activeAnimation = {
+    start,
+    delta: shortestYearDelta(target, start),
+    startT: performance.now(),
+    dur,
+    fromUser
   };
-  requestAnimationFrame(animFn);
+  scheduleFrame();
 }
 
 // ---------- Idle drift ----------------------------------------------------
@@ -1090,13 +1182,14 @@ setInterval(() => {
   setPosition(position + 0.06);
 }, 100);
 
-// ---------- "Right now" detection -----------------------------------------
+// ---------- Current moment detection --------------------------------------
 
 function updateRightNowStamp() {
   const w = currentWeekOfYear();
   const s = seasonByWeek(w);
   elRightNowSeason.textContent = s.name;
-  elRightNowWeek.textContent = `WK ${String(w + 1).padStart(2, '0')} / 52`;
+  elRightNowWeek.textContent = `Week ${w + 1}`;
+  advisoryBtn.setAttribute('aria-label', `Go to the current week: Week ${w + 1}, ${s.name}`);
   // The persistent today marker on the scrubber tracks the same week
   todayMarker.style.left = `${(w / 52) * 100}%`;
 }
@@ -1113,6 +1206,15 @@ audioBtn.addEventListener('click', async () => {
 
 advisoryBtn.addEventListener('click', jumpToNow);
 
+todayMarker.addEventListener('pointerdown', (e) => {
+  e.stopPropagation();
+});
+
+todayMarker.addEventListener('click', (e) => {
+  e.stopPropagation();
+  jumpToNow();
+});
+
 shareBtn.addEventListener('click', async () => {
   const s = seasonByWeek(position);
   const url = `${location.origin}${location.pathname}#${s.id}`;
@@ -1124,6 +1226,22 @@ shareBtn.addEventListener('click', async () => {
       flashTip(shareBtn, 'Link copied');
     }
   } catch { /* user cancelled */ }
+});
+
+aboutBtn.addEventListener('click', () => {
+  if (aboutModal.showModal) aboutModal.showModal();
+  else aboutModal.setAttribute('open', '');
+});
+
+aboutClose.addEventListener('click', () => {
+  if (aboutModal.close) aboutModal.close();
+  else aboutModal.removeAttribute('open');
+});
+
+aboutModal.addEventListener('click', (e) => {
+  if (e.target !== aboutModal) return;
+  if (aboutModal.close) aboutModal.close();
+  else aboutModal.removeAttribute('open');
 });
 
 function flashTip(btn, msg) {
@@ -1139,6 +1257,9 @@ function flashTip(btn, msg) {
 // ---------- Boot ----------------------------------------------------------
 
 function boot() {
+  if (booted) return;
+  booted = true;
+
   // Start at hash → or today
   let startWeek;
   const hash = location.hash.replace('#', '');
@@ -1151,6 +1272,7 @@ function boot() {
   // Snap immediately (no animation) so first paint is the right scene
   displayPos = startWeek;
   setPosition(startWeek);
+  updateHandle(true);
   // Reveal sequence
   requestAnimationFrame(() => {
     body.dataset.loaded = 'true';
@@ -1166,11 +1288,4 @@ window.addEventListener('hashchange', () => {
   }
 });
 
-// Wait for fonts (best effort) before booting, so the masthead doesn't FOIT-flash
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(boot).catch(boot);
-  // Hard fallback if fonts hang
-  setTimeout(boot, 1500);
-} else {
-  boot();
-}
+boot();

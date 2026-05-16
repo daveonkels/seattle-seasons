@@ -5,22 +5,16 @@
 
 :root {
   /* Chrome tokens — restrained, tinted toward navy. Never change. */
-  --ink: oklch(22% 0.035 248);
-  --ink-soft: oklch(34% 0.04 248);
   --paper: oklch(96% 0.012 85);
-  --paper-warm: oklch(93% 0.018 80);
-  --paper-line: oklch(82% 0.02 80);
   --civic-red: oklch(52% 0.18 28);
   /* Per-season civic-red — overridden by body[data-mood] below.
      Hue locked at 28; only L shifts so it stays a red, not a pink. */
-  --season-red: var(--season-red);
+  --season-red: var(--civic-red);
 
   /* Active season drench — JS overwrites these. */
   --season-a: oklch(28% 0.04 250);
   --season-b: oklch(42% 0.06 245);
   --season-ink: oklch(96% 0.015 85);
-  --season-ink-soft: oklch(88% 0.02 85);
-  --season-glow: oklch(60% 0.10 240 / 0.4);
 
   /* Motion */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -52,7 +46,21 @@
 
   /* Layout */
   --chrome-pad: clamp(1.25rem, 2.4vw, 2.25rem);
+  --scrubber-space-h: 86px;
   --scrubber-h: 86px;
+  --scrubber-track-h: 28px;
+  --scrubber-seg-inset: 4px;
+  --scrubber-seg-h: calc(var(--scrubber-track-h) - var(--scrubber-seg-inset) * 2);
+  --scrubber-pad-b: 1.1em;
+  --today-label-top: 68px;
+  --today-mark-top: 30px;
+  --today-line-top: 38px;
+  --today-line-h: 28px;
+  --today-dot-size: 7px;
+  --handle-top: calc(var(--scrubber-seg-inset) - 2px);
+  --handle-knob-size: var(--scrubber-seg-h);
+  --handle-knob-top: 0;
+  --handle-knob-border: 2px;
 }
 
 /* Civic-red contrast adapts to scene mood (dark scenes need a lifted red) */
@@ -157,7 +165,14 @@ body[data-season="convergence-zones"] #vignette {
   pointer-events: auto;
 }
 .chrome__corner--tl { top: 0; left: 0; max-width: min(640px, 70vw); }
-.chrome__corner--tr { top: 0; right: 0; text-align: right; }
+.chrome__corner--tr {
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
 
 .chrome__city {
   display: block;
@@ -187,169 +202,44 @@ body[data-season="convergence-zones"] #vignette {
   opacity: 0.75;
 }
 
-/* Footer credit — a midpoint blend of the season's bg and ink, so it tints with the year */
-.credit {
-  position: absolute;
-  right: var(--chrome-pad);
-  bottom: 1.05em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  text-decoration: none;
-  line-height: 1;
-  color: color-mix(in oklch, var(--season-a) 55%, var(--season-ink) 45%);
-  pointer-events: auto;
-  transition: color 320ms var(--ease-out-quart), letter-spacing 240ms var(--ease-out-quart);
-}
-.credit:hover,
-.credit:focus-visible {
-  color: var(--season-ink);
-  letter-spacing: 0.22em;
-}
-.credit:focus-visible {
-  outline: 2px solid var(--season-red);
-  outline-offset: 4px;
-}
-.credit__arrow {
-  display: inline-block;
-  transition: transform 240ms var(--ease-out-quart);
-}
-.credit:hover .credit__arrow,
-.credit:focus-visible .credit__arrow {
-  transform: translate(2px, -2px);
-}
-@media (max-width: 760px) {
-  .credit {
-    bottom: 0.8em;
-    font-size: 0.62rem;
-    letter-spacing: 0.16em;
-  }
-  /* On narrow screens, the hint and credit fight for the same baseline.
-     The hint already fades after first interaction; tuck it left so they cohabit. */
-  .scrubber__hint { text-align: left; }
-}
-
 .advisory {
-  /* Reset button defaults — this is now an interactive element */
   font: inherit;
+  appearance: none;
   background: none;
   border: 0;
+  padding: 0;
   text-align: right;
   cursor: pointer;
   color: inherit;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.6em;
+  display: inline-flex;
+  max-width: min(34rem, 58vw);
   font-family: var(--font-mono);
-  font-size: var(--t-step);
+  font-size: clamp(0.62rem, 0.56rem + 0.25vw, 0.78rem);
+  line-height: 1.25;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.78;
   transition: filter 280ms var(--ease-out-quart),
+              opacity 240ms var(--ease-out-quart),
+              color var(--drench-ms) var(--ease-out-quart),
               transform 280ms var(--ease-out-quart);
 }
 .advisory:hover,
 .advisory:focus-visible {
   filter: brightness(1.18) saturate(1.05);
+  opacity: 1;
   transform: translateY(-1px);
 }
 .advisory:focus-visible {
   outline: 2px solid var(--season-red);
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
-.advisory__head {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0.78;
+.advisory__text {
+  text-wrap: balance;
 }
-.advisory__dot {
-  width: 0.55em;
-  height: 0.55em;
-  background: var(--season-red);
-  border-radius: 50%;
-  animation: pulse-dot 2.2s var(--ease-out-quart) infinite;
-  transition: background var(--drench-ms) var(--ease-out-quart);
-}
-@keyframes pulse-dot {
-  0%, 60%, 100% { opacity: 1; transform: scale(1); }
-  30% { opacity: 0.35; transform: scale(1.4); }
-}
-.advisory__main {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  border: 1px solid color-mix(in oklch, currentColor 22%, transparent);
-  padding: 0.7em 0.95em;
-  background: color-mix(in oklch, var(--season-a) 35%, transparent);
-  backdrop-filter: blur(8px) saturate(1.1);
-  -webkit-backdrop-filter: blur(8px) saturate(1.1);
-  transition: border-color 240ms var(--ease-out-quart);
-}
-.advisory__main .advisory__dot {
-  position: absolute;
-  top: 0.8em;
-  left: 0.85em;
-  width: 0.45em;
-  height: 0.45em;
-}
-.advisory:hover .advisory__main,
-.advisory:focus-visible .advisory__main {
-  border-color: color-mix(in oklch, var(--season-red) 60%, currentColor 40%);
-}
-.advisory__label,
-.advisory__season,
-.advisory__week {
-  display: block;
-}
-.advisory__label {
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0.7;
-  font-size: 0.7em;
-}
-.advisory__season {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(1.15rem, 0.9rem + 1vw, 1.6rem);
-  letter-spacing: -0.005em;
-  margin-top: 0.1em;
-  white-space: nowrap;
-}
-.advisory__week {
-  font-size: 0.78em;
-  letter-spacing: 0.14em;
-  opacity: 0.7;
-  margin-top: 0.2em;
-}
-
-.advisory__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  font-size: 0.7em;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+.advisory__prefix {
   color: var(--season-red);
-  transition: color var(--drench-ms) var(--ease-out-quart),
-              letter-spacing 240ms var(--ease-out-quart);
-}
-.advisory:hover .advisory__cta,
-.advisory:focus-visible .advisory__cta {
-  letter-spacing: 0.22em;
-}
-.advisory__cta-arrow {
-  display: inline-block;
-  transition: transform 600ms var(--ease-out-quart);
-}
-.advisory:hover .advisory__cta-arrow,
-.advisory:focus-visible .advisory__cta-arrow {
-  transform: rotate(-180deg);
+  transition: color var(--drench-ms) var(--ease-out-quart);
 }
 
 /* ==========================================================================
@@ -357,7 +247,7 @@ body[data-season="convergence-zones"] #vignette {
    ========================================================================== */
 .skyline {
   position: fixed;
-  bottom: var(--scrubber-h);
+  bottom: var(--scrubber-space-h);
   left: 0;
   width: 100%;
   height: clamp(60px, 10vh, 110px);
@@ -380,11 +270,15 @@ body[data-season="oppressive-sun"] .skyline { opacity: 0.2; }
   z-index: 8;
   height: 100dvh;
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto auto;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 32vw);
+  grid-template-rows: 1fr auto;
   align-items: end;
-  padding: calc(var(--chrome-pad) + 5.5rem) var(--chrome-pad) calc(var(--scrubber-h) + 1.5rem);
-  gap: var(--sp-5);
+  padding:
+    calc(var(--chrome-pad) + 5.5rem)
+    var(--chrome-pad)
+    calc(var(--scrubber-space-h) + clamp(2rem, 4vh, 3.5rem));
+  column-gap: clamp(2rem, 6vw, 7rem);
+  row-gap: var(--sp-4);
   pointer-events: none;
   color: var(--season-ink);
   transition: color var(--drench-ms) var(--ease-out-quart);
@@ -392,6 +286,8 @@ body[data-season="oppressive-sun"] .skyline { opacity: 0.2; }
 .content > * { pointer-events: auto; }
 
 .content__head {
+  grid-column: 1 / -1;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -425,7 +321,10 @@ body[data-mood="dark"] .content__title {
 }
 
 .content__body-wrap {
-  max-width: 38ch;
+  grid-column: 1;
+  grid-row: 2;
+  align-self: start;
+  max-width: clamp(34ch, 38vw, 48ch);
   display: flex;
   flex-direction: column;
   gap: 0.6em;
@@ -435,7 +334,7 @@ body[data-mood="dark"] .content__title {
   font-size: var(--t-lede);
   line-height: 1.4;
   margin: 0;
-  text-wrap: pretty;
+  text-wrap: balance;
   opacity: 0.95;
 }
 .content__footnote {
@@ -451,13 +350,15 @@ body[data-mood="dark"] .content__title {
    EXPECT stamp
    ========================================================================== */
 .stamp {
+  grid-column: 2;
+  grid-row: 2;
   justify-self: end;
-  align-self: end;
+  align-self: start;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.55em;
-  max-width: 340px;
+  max-width: min(360px, 32vw);
   color: var(--season-ink);
   transition: color var(--drench-ms) var(--ease-out-quart);
 }
@@ -490,13 +391,13 @@ body[data-mood="dark"] .content__title {
 }
 
 /* ==========================================================================
-   Micro-controls — tiny icon buttons under the advisory
+   Micro-controls — compact utility buttons
    ========================================================================== */
 .micro-controls {
   display: inline-flex;
   justify-content: flex-end;
   gap: 0.4em;
-  margin-top: 0.85em;
+  margin-bottom: 0.65em;
 }
 
 .micro-btn {
@@ -528,6 +429,12 @@ body[data-mood="dark"] .content__title {
   outline-offset: 3px;
 }
 .micro-btn svg { display: block; }
+.micro-question {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+}
 
 /* Tooltip — appears below the icon, right-anchored so it stays on screen */
 .micro-btn::after {
@@ -586,6 +493,83 @@ body[data-mood="dark"] .content__title {
 }
 
 /* ==========================================================================
+   About dialog
+   ========================================================================== */
+.about-modal {
+  width: min(540px, calc(100vw - 2rem));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: oklch(22% 0.035 248);
+}
+.about-modal::backdrop {
+  background: color-mix(in oklch, var(--season-a) 48%, black 52% / 0.62);
+  backdrop-filter: blur(8px) saturate(1.05);
+  -webkit-backdrop-filter: blur(8px) saturate(1.05);
+}
+.about-modal__panel {
+  position: relative;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+  border: 1px solid color-mix(in oklch, oklch(22% 0.035 248) 18%, transparent);
+  background: color-mix(in oklch, var(--paper) 90%, var(--season-a) 10%);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+}
+.about-modal__close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: inherit;
+  border: 1px solid color-mix(in oklch, currentColor 20%, transparent);
+}
+.about-modal__close:hover,
+.about-modal__close:focus-visible {
+  border-color: color-mix(in oklch, var(--season-red) 65%, currentColor 35%);
+  outline: 2px solid var(--season-red);
+  outline-offset: 3px;
+}
+.about-modal__eyebrow {
+  margin: 0 2.5rem 0.8rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--season-red);
+}
+.about-modal__title {
+  margin: 0 2.5rem 1rem 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  line-height: 0.95;
+}
+.about-modal p:not(.about-modal__eyebrow) {
+  margin: 0;
+  max-width: 48ch;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+.about-modal p:not(.about-modal__eyebrow) + p:not(.about-modal__eyebrow) { margin-top: 0.9rem; }
+.about-modal__credit {
+  font-family: var(--font-mono) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.about-modal__credit a {
+  color: inherit;
+  text-decoration-color: var(--season-red);
+  text-underline-offset: 0.24em;
+}
+
+/* ==========================================================================
    Year wheel scrubber
    ========================================================================== */
 .scrubber {
@@ -599,7 +583,7 @@ body[data-mood="dark"] .content__title {
     linear-gradient(180deg, transparent, color-mix(in oklch, var(--season-a) 70%, transparent) 30%, color-mix(in oklch, var(--season-a) 88%, black 8%) 100%);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding: 0 var(--chrome-pad) 1.1em;
+  padding: 0 var(--chrome-pad) calc(var(--scrubber-pad-b) + env(safe-area-inset-bottom, 0px) + 0.65rem);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -624,7 +608,7 @@ body[data-mood="dark"] .content__title {
 
 .scrubber__track {
   position: relative;
-  height: 28px;
+  height: var(--scrubber-track-h);
   border-top: 1px solid color-mix(in oklch, currentColor 25%, transparent);
   border-bottom: 1px solid color-mix(in oklch, currentColor 25%, transparent);
   cursor: ew-resize;
@@ -649,7 +633,7 @@ body[data-mood="dark"] .content__title {
 
 .scrubber__segments {
   position: absolute;
-  inset: 4px 0;
+  inset: var(--scrubber-seg-inset) 0;
   pointer-events: none;
 }
 .scrubber__seg {
@@ -666,20 +650,25 @@ body[data-mood="dark"] .content__title {
 /* Today marker — civic landmark, persists when handle scrubs past */
 .scrubber__today {
   position: absolute;
-  top: -22px;
-  bottom: -10px;
+  top: -34px;
+  bottom: -44px;
   left: 0;
-  width: 0;
+  width: 48px;
   transform: translateX(-50%);
-  pointer-events: none;
-  z-index: 1;
+  pointer-events: auto;
+  z-index: 3;
   color: var(--season-red);
+  cursor: pointer;
   transition: color var(--drench-ms) var(--ease-out-quart);
+}
+.scrubber__today:focus-visible {
+  outline: 2px solid var(--season-red);
+  outline-offset: 4px;
 }
 .scrubber__today-label {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: var(--today-label-top);
+  left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-mono);
   font-size: 0.58rem;
@@ -690,10 +679,10 @@ body[data-mood="dark"] .content__title {
 }
 .scrubber__today-mark {
   position: absolute;
-  top: 18px;
-  left: 0;
-  width: 7px;
-  height: 7px;
+  top: var(--today-mark-top);
+  left: 50%;
+  width: var(--today-dot-size);
+  height: var(--today-dot-size);
   border-radius: 50%;
   background: currentColor;
   transform: translateX(-50%);
@@ -706,10 +695,10 @@ body[data-mood="dark"] .content__title {
 }
 .scrubber__today-line {
   position: absolute;
-  top: 26px;
-  left: 0;
+  top: var(--today-line-top);
+  left: 50%;
   width: 1px;
-  height: 28px;
+  height: var(--today-line-h);
   background: currentColor;
   opacity: 0.42;
   transform: translateX(-50%);
@@ -717,10 +706,10 @@ body[data-mood="dark"] .content__title {
 
 .scrubber__handle {
   position: absolute;
-  top: -10px;
+  top: var(--handle-top);
   bottom: -10px;
   width: 2px;
-  background: var(--season-ink);
+  background: transparent;
   left: 0;
   transform: translateX(-50%);
   cursor: grab;
@@ -733,29 +722,25 @@ body[data-mood="dark"] .content__title {
   content: "";
   position: absolute;
   left: 50%;
-  top: -8px;
-  width: 14px;
-  height: 14px;
-  background: var(--season-ink);
-  border: 2px solid var(--season-a);
+  top: var(--handle-knob-top);
+  width: var(--handle-knob-size);
+  height: var(--handle-knob-size);
+  background:
+    radial-gradient(circle at center,
+      var(--season-a) 0 46%,
+      color-mix(in oklch, var(--season-ink) 18%, transparent) 48% 100%);
+  border: var(--handle-knob-border) solid color-mix(in oklch, var(--season-ink) 82%, var(--season-a) 18%);
   border-radius: 50%;
   transform: translateX(-50%);
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--season-a) 42%, transparent),
+    0 6px 18px color-mix(in oklch, black 22%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   transition: transform 200ms var(--ease-out-quart),
               background var(--drench-ms) var(--ease-out-quart),
-              border-color var(--drench-ms) var(--ease-out-quart);
-}
-.scrubber__handle::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -10px;
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 9px solid var(--season-ink);
-  transform: translateX(-50%);
-  transition: border-top-color var(--drench-ms) var(--ease-out-quart);
+              border-color var(--drench-ms) var(--ease-out-quart),
+              box-shadow var(--drench-ms) var(--ease-out-quart);
 }
 .scrubber__handle:hover::before,
 .scrubber__handle:focus-visible::before {
@@ -799,18 +784,6 @@ body.is-dragging .scrubber__handle-flag,
   opacity: 1;
 }
 
-.scrubber__hint {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  opacity: 0.55;
-  text-align: center;
-  height: 1em;
-  transition: opacity 600ms var(--ease-out-quart);
-}
-body[data-interacted="true"] .scrubber__hint { opacity: 0; }
-
 /* Handle pulse hint at first load */
 .scrubber__handle::before {
   animation: handle-pulse 2.4s var(--ease-out-quart) infinite;
@@ -830,7 +803,7 @@ body[data-loaded="false"] .skyline,
 body[data-loaded="false"] .content { opacity: 0; }
 
 body[data-loaded="true"] .chrome { opacity: 1; transition: opacity 700ms var(--ease-out-quart) 100ms; }
-body[data-loaded="true"] .skyline { opacity: 0.32; transition: opacity 1100ms var(--ease-out-quart) 600ms, color var(--drench-ms) var(--ease-out-quart); }
+body[data-loaded="true"] .skyline { transition: opacity 1100ms var(--ease-out-quart) 600ms, color var(--drench-ms) var(--ease-out-quart); }
 body[data-loaded="true"] .scrubber { opacity: 1; transition: opacity 700ms var(--ease-out-quart) 900ms; }
 body[data-loaded="true"] .content { opacity: 1; transition: opacity 800ms var(--ease-out-quart) 1300ms; }
 
@@ -850,7 +823,6 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
 .content__body,
 .content__footnote,
 .stamp {
-  --swap-y: 0px;
   transition: opacity 400ms var(--ease-out-quart), transform 500ms var(--ease-out-expo);
 }
 .content.is-swapping .content__subtitle,
@@ -872,26 +844,48 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
 @media (max-width: 760px) {
   :root {
     --chrome-pad: 1.1rem;
-    --scrubber-h: 116px;
+    --scrubber-space-h: 86px;
+    --scrubber-h: 86px;
+    --scrubber-track-h: 28px;
+    --scrubber-seg-inset: 4px;
+    --scrubber-pad-b: 1.1em;
+    --today-label-top: 68px;
+    --today-mark-top: 30px;
+    --today-line-top: 38px;
+    --today-line-h: 28px;
+    --today-dot-size: 7px;
+    --handle-top: calc(var(--scrubber-seg-inset) - 2px);
+    --handle-knob-size: var(--scrubber-seg-h);
+    --handle-knob-top: 0;
+    --handle-knob-border: 2px;
     --t-title: clamp(2.6rem, 18vw, 6.5rem);
   }
-  /* Finger-friendly scrubber: 44px track height meets Apple HIG tap target */
-  .scrubber__track { height: 44px; }
-  .scrubber__handle::before { width: 18px; height: 18px; top: -10px; }
-  .scrubber__handle::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 11px; }
-  .scrubber__today-mark { width: 9px; height: 9px; }
-  .scrubber__today-line { height: 44px; }
+  .scrubber__today { bottom: -34px; }
   .chrome__corner--tl { max-width: 60vw; }
-  .chrome__corner--tr { max-width: 38vw; }
-  .advisory__main { padding: 0.55em 0.75em; }
+  .chrome__corner--tr { max-width: 48vw; }
+  .advisory {
+    max-width: 48vw;
+    font-size: 0.54rem;
+    letter-spacing: 0.12em;
+  }
+  .micro-controls { margin-bottom: 0.5em; }
   .skyline { display: none; }
   .content {
     padding-top: calc(var(--chrome-pad) + 7.5rem);
+    grid-template-columns: 1fr;
     grid-template-rows: 1fr auto auto;
+    row-gap: var(--sp-5);
   }
   .content__head { gap: 0.3em; }
-  .content__body-wrap { max-width: 30ch; }
+  .content__body-wrap {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: min(34ch, 100%);
+  }
   .stamp {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
     max-width: 100%;
     width: 100%;
     justify-self: stretch;

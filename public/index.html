@@ -19,8 +19,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com">
-<link href="https://fonts.googleapis.com/css2?family=Khand:wght@300;400;500;600;700&family=Fragment+Mono&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=nippo@400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600&family=Fragment+Mono&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=nippo@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css">
 </head>
 <body data-season="dark-wet" data-loaded="false">
@@ -39,18 +39,6 @@
   </div>
 
   <div class="chrome__corner chrome__corner--tr">
-    <button class="advisory" id="advisory-btn" type="button" aria-label="Jump the timeline to today">
-      <span class="advisory__main" aria-live="polite">
-        <span class="advisory__dot" aria-hidden="true"></span>
-        <span class="advisory__label">Right now</span>
-        <span class="advisory__season" id="right-now-season">—</span>
-        <span class="advisory__week" id="right-now-week">WK —— / 52</span>
-      </span>
-      <span class="advisory__cta" aria-hidden="true">
-        <span class="advisory__cta-arrow">↺</span>
-        <span>Jump to today</span>
-      </span>
-    </button>
     <div class="micro-controls">
       <button class="micro-btn" id="audio-toggle" type="button" aria-pressed="false"
               data-tip="Ambient sound" aria-label="Toggle ambient audio">
@@ -64,7 +52,19 @@
           <line x1="12" y1="2" x2="12" y2="15"/>
         </svg>
       </button>
+      <button class="micro-btn" id="about-btn" type="button"
+              data-tip="What is this?" aria-label="What is this?" aria-haspopup="dialog" aria-controls="about-modal">
+        <span class="micro-question" aria-hidden="true">?</span>
+      </button>
     </div>
+    <button class="advisory" id="advisory-btn" type="button" aria-label="Go to the current week">
+      <span class="advisory__text" aria-live="polite">
+        <span class="advisory__prefix">Currently:</span>
+        <span id="right-now-week">Week ——</span>
+        <span aria-hidden="true"> - </span>
+        <span id="right-now-season">—</span>
+      </span>
+    </button>
   </div>
 </header>
 
@@ -111,28 +111,32 @@
   <div class="scrubber__track" id="scrubber-track">
     <div class="scrubber__ticks" id="scrubber-ticks" aria-hidden="true"></div>
     <div class="scrubber__segments" id="scrubber-segments" aria-hidden="true"></div>
-    <div class="scrubber__today" id="scrubber-today" aria-hidden="true">
+    <button class="scrubber__today" id="scrubber-today" type="button" aria-label="Go to the current week">
       <span class="scrubber__today-label">Today</span>
       <span class="scrubber__today-mark"></span>
       <span class="scrubber__today-line"></span>
-    </div>
+    </button>
     <div class="scrubber__handle" id="scrubber-handle"
          role="slider"
          tabindex="0"
          aria-label="Year scrubber"
-         aria-valuemin="0" aria-valuemax="51" aria-valuenow="0"
+         aria-valuemin="1" aria-valuemax="52" aria-valuenow="1"
          aria-valuetext="The Dark Wet, week 1">
       <span class="scrubber__handle-flag" id="scrubber-flag">The Dark Wet</span>
     </div>
   </div>
-  <div class="scrubber__hint" id="scrubber-hint">Drag · scroll · or ← →</div>
-  <a class="credit" href="https://onk.io" target="_blank" rel="noopener noreferrer">
-    <span>Site by Dave</span>
-    <span class="credit__arrow" aria-hidden="true">↗</span>
-  </a>
 </footer>
 
-<div class="hint-cursor" id="hint-cursor" aria-hidden="true"></div>
+<dialog class="about-modal" id="about-modal" aria-labelledby="about-title">
+  <div class="about-modal__panel">
+    <button class="about-modal__close" id="about-close" type="button" aria-label="Close">×</button>
+    <p class="about-modal__eyebrow">Seattle Seasons</p>
+    <h2 class="about-modal__title" id="about-title">What is this?</h2>
+    <p>An interactive field guide to Seattle's 14 unofficial seasons. It started as a deadpan civic-style poster for new arrivals; this version lets the weather move as you scrub through the year.</p>
+    <p>Drag, scroll, swipe, or use the left and right arrow keys to move season by season.</p>
+    <p class="about-modal__credit">Site by <a href="https://onk.io" target="_blank" rel="noopener noreferrer">Dave</a>.</p>
+  </div>
+</dialog>
 
 <script type="module" src="./app.js"></script>
 </body>
