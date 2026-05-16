@@ -22,13 +22,13 @@
   --drench-ms: 900ms;
   --content-ms: 600ms;
 
-  /* Typography. Stardom (display) carries the season name; Literata
-     (body) holds prose; Fragment Mono carries civic labels. The texture
-     contrast between hand-set display and literary body does the
-     hierarchy work the prior Khand+Nippo pairing couldn't. */
-  --font-display: 'Stardom', Georgia, 'Times New Roman', serif;
+  /* Typography. Three families: Dancing Script for the logo (handwritten,
+     personal), Abril Fatface for the season name (Didone display, high
+     contrast), Work Sans for body. Fragment Mono stays on civic labels. */
+  --font-masthead: 'Dancing Script', 'Brush Script MT', cursive;
+  --font-display: 'Abril Fatface', Georgia, 'Times New Roman', serif;
   --font-mono: 'Fragment Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-body: 'Literata', Georgia, 'Times New Roman', serif;
+  --font-body: 'Work Sans', system-ui, -apple-system, sans-serif;
 
   /* Scale */
   --t-step: clamp(0.7rem, 0.65rem + 0.2vw, 0.78rem);
@@ -200,11 +200,11 @@ body[data-season="convergence-zones"] .advisory__prefix {
 }
 
 .chrome__title {
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-masthead);
+  font-weight: 600;
   font-size: var(--t-masthead);
   letter-spacing: 0;
-  line-height: 0.98;
+  line-height: 1.05;
   margin: 0;
   text-transform: none;
 }
@@ -324,8 +324,8 @@ body[data-season="oppressive-sun"] .skyline { opacity: 0.2; }
   font-family: var(--font-display);
   font-weight: 400;
   font-size: var(--t-title);
-  line-height: 0.95;
-  letter-spacing: -0.005em;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
   margin: 0;
   max-width: 14ch;
   text-wrap: balance;
@@ -347,7 +347,7 @@ body[data-mood="dark"] .content__title {
 .content__body {
   font-family: var(--font-body);
   font-size: var(--t-lede);
-  line-height: 1.5;
+  line-height: 1.45;
   margin: 0;
   text-wrap: balance;
   opacity: 0.95;
@@ -398,7 +398,7 @@ body[data-mood="dark"] .content__title {
 .stamp__text {
   font-family: var(--font-body);
   font-size: 1.05rem;
-  line-height: 1.55;
+  line-height: 1.5;
   margin: 0;
   color: var(--season-ink);
   text-wrap: pretty;
@@ -562,8 +562,8 @@ body[data-mood="dark"] .content__title {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(2rem, 5vw, 3.3rem);
-  line-height: 1;
-  letter-spacing: 0;
+  line-height: 1.05;
+  letter-spacing: -0.005em;
 }
 .about-modal p:not(.about-modal__eyebrow) {
   margin: 0;
