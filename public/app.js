@@ -27,7 +27,7 @@ const SEASONS = [
     expect: 'Panic, abandoned hatchbacks, and joy.',
     weekStart: 7, weekEnd: 9,
     a: 'oklch(94% 0.015 230)', b: 'oklch(78% 0.04 235)',
-    ink: 'oklch(24% 0.045 245)',
+    ink: 'oklch(20% 0.05 245)',
     mood: 'bright', particles: 'snow', audio: 'snow',
     segColor: 'oklch(86% 0.03 230)'
   },
@@ -40,7 +40,7 @@ const SEASONS = [
     expect: 'Rain, but make it optimistic.',
     weekStart: 9, weekEnd: 13,
     a: 'oklch(82% 0.03 230)', b: 'oklch(64% 0.06 220)',
-    ink: 'oklch(22% 0.04 240)',
+    ink: 'oklch(16% 0.045 240)',
     mood: 'neutral', particles: 'rain-light', audio: 'rain-light',
     segColor: 'oklch(74% 0.04 225)'
   },
@@ -53,7 +53,7 @@ const SEASONS = [
     expect: 'Crowds, traffic, and regret for not leaving sooner.',
     weekStart: 13, weekEnd: 14,
     a: 'oklch(82% 0.10 80)', b: 'oklch(60% 0.10 65)',
-    ink: 'oklch(26% 0.07 55)',
+    ink: 'oklch(14% 0.08 55)',
     mood: 'bright', particles: 'sun-rays', audio: 'sun-rays',
     segColor: 'oklch(74% 0.10 75)'
   },
@@ -65,7 +65,7 @@ const SEASONS = [
     footnote: '',
     expect: 'Moss, mushrooms, and mystery smells.',
     weekStart: 14, weekEnd: 18,
-    a: 'oklch(56% 0.05 145)', b: 'oklch(36% 0.06 150)',
+    a: 'oklch(46% 0.06 145)', b: 'oklch(32% 0.06 150)',
     ink: 'oklch(94% 0.02 100)',
     mood: 'dark', particles: ['fog', 'mold-patch', 'mold-spore'], audio: 'fog',
     segColor: 'oklch(48% 0.06 148)'
@@ -79,7 +79,7 @@ const SEASONS = [
     expect: 'Blooms, allergies, the audacity of pollen.',
     weekStart: 18, weekEnd: 22,
     a: 'oklch(80% 0.07 355)', b: 'oklch(56% 0.09 355)',
-    ink: 'oklch(22% 0.06 355)',
+    ink: 'oklch(10% 0.08 355)',
     mood: 'neutral', particles: ['rain-light', 'petal', 'pollen'], audio: 'pollen',
     segColor: 'oklch(72% 0.08 355)'
   },
@@ -92,7 +92,7 @@ const SEASONS = [
     expect: 'Confusion, layers, and a somber gloom.',
     weekStart: 22, weekEnd: 25,
     a: 'oklch(70% 0.012 248)', b: 'oklch(52% 0.018 245)',
-    ink: 'oklch(24% 0.035 245)',
+    ink: 'oklch(10% 0.04 245)',
     mood: 'neutral', particles: 'fog', audio: 'silence',
     segColor: 'oklch(62% 0.012 246)'
   },
@@ -118,7 +118,7 @@ const SEASONS = [
     expect: 'Complaints, AC envy, and melted patience.',
     weekStart: 29, weekEnd: 32,
     a: 'oklch(86% 0.11 82)', b: 'oklch(62% 0.13 58)',
-    ink: 'oklch(26% 0.10 50)',
+    ink: 'oklch(18% 0.10 50)',
     mood: 'bright', particles: 'sun-rays', audio: 'sun-rays',
     segColor: 'oklch(76% 0.13 70)'
   },
@@ -130,7 +130,7 @@ const SEASONS = [
     footnote: '',
     expect: 'Air filters, cancellations, and indoor everything.',
     weekStart: 32, weekEnd: 36,
-    a: 'oklch(58% 0.16 50)', b: 'oklch(42% 0.14 38)',
+    a: 'oklch(48% 0.16 50)', b: 'oklch(36% 0.14 38)',
     ink: 'oklch(94% 0.02 60)',
     mood: 'dark', particles: 'smoke', audio: 'smoke',
     segColor: 'oklch(50% 0.16 45)'
@@ -144,7 +144,7 @@ const SEASONS = [
     expect: 'Light rain, deep sighs, and high acceptance.',
     weekStart: 36, weekEnd: 39,
     a: 'oklch(72% 0.05 215)', b: 'oklch(52% 0.07 220)',
-    ink: 'oklch(22% 0.04 240)',
+    ink: 'oklch(10% 0.05 240)',
     mood: 'neutral', particles: 'rain-light', audio: 'rain-light',
     segColor: 'oklch(62% 0.06 218)'
   },
@@ -157,7 +157,7 @@ const SEASONS = [
     expect: 'Webs, jump scares, and dramatic exits.',
     weekStart: 39, weekEnd: 42,
     a: 'oklch(74% 0.08 80)', b: 'oklch(50% 0.07 62)',
-    ink: 'oklch(22% 0.05 65)',
+    ink: 'oklch(8% 0.06 65)',
     mood: 'neutral', particles: ['webs', 'spider'], audio: 'webs',
     segColor: 'oklch(64% 0.09 72)'
   },

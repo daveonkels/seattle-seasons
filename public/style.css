@@ -63,10 +63,12 @@
   --handle-knob-border: 2px;
 }
 
-/* Civic-red contrast adapts to scene mood (dark scenes need a lifted red) */
+/* Civic-red contrast adapts to scene mood. Hue locked at 28; only L shifts.
+   Bright/neutral push deeper than instinct suggests because the kicker sits on
+   the season-b zone (60-78% L) and a 40%-L red fails AA on those mid-tones. */
 body[data-mood="dark"]    { --season-red: oklch(74% 0.17 28); }
-body[data-mood="bright"]  { --season-red: oklch(48% 0.19 28); }
-/* neutral mood: inherits the :root default */
+body[data-mood="bright"]  { --season-red: oklch(24% 0.21 28); }
+body[data-mood="neutral"] { --season-red: oklch(22% 0.21 28); }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -131,21 +133,40 @@ button {
   transition: background var(--drench-ms) var(--ease-out-quart);
 }
 
-/* Convergence split */
+/* Convergence split: dark navy carries the content + chrome zones (left 68%),
+   gold occupies the right strip. The seam stays visible — the joke is preserved —
+   but text never lands inside the bright half. */
 body[data-season="convergence-zones"] #drench {
   background:
     linear-gradient(90deg,
-      oklch(35% 0.06 245) 0%,
-      oklch(35% 0.06 245) 49.5%,
-      oklch(70% 0.03 240) 50%,
-      oklch(78% 0.10 85) 50.5%,
+      oklch(28% 0.06 245) 0%,
+      oklch(32% 0.06 245) 60%,
+      oklch(38% 0.05 245) 66%,
+      oklch(64% 0.06 160) 68%,
+      oklch(78% 0.10 85) 72%,
       oklch(78% 0.10 85) 100%
     );
 }
 body[data-season="convergence-zones"] #vignette {
   background:
-    radial-gradient(60% 100% at 25% 50%, transparent 50%, oklch(20% 0.06 245 / 0.5) 100%),
-    radial-gradient(60% 100% at 75% 50%, transparent 50%, oklch(60% 0.10 85 / 0.3) 100%);
+    radial-gradient(60% 100% at 25% 50%, transparent 50%, oklch(18% 0.06 245 / 0.55) 100%),
+    radial-gradient(60% 100% at 85% 50%, transparent 50%, oklch(60% 0.10 85 / 0.3) 100%);
+}
+/* Title may cross the seam at large sizes — halo keeps it readable on gold. */
+body[data-season="convergence-zones"] .content__title {
+  text-shadow:
+    0 0 10px oklch(20% 0.06 245 / 0.65),
+    0 0 28px oklch(20% 0.06 245 / 0.35);
+}
+/* The top-right chrome and the bottom-right EXPECT stamp sit in the gold strip.
+   Flip their ink to a deep warm brown so they read on the bright side. */
+body[data-season="convergence-zones"] .chrome__corner--tr,
+body[data-season="convergence-zones"] .stamp {
+  color: oklch(22% 0.07 55);
+}
+body[data-season="convergence-zones"] .stamp__label,
+body[data-season="convergence-zones"] .advisory__prefix {
+  color: oklch(34% 0.18 28);
 }
 
 /* ==========================================================================
