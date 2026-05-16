@@ -607,6 +607,10 @@ body[data-mood="dark"] .content__title {
 }
 .about-modal p:not(.about-modal__eyebrow) + p:not(.about-modal__eyebrow) { margin-top: 0.9rem; }
 .about-modal__credit {
+  margin-top: 0 !important;
+  padding-top: 0.9rem;
+  max-width: none !important;
+  border-top: 1px solid color-mix(in oklch, currentColor 18%, transparent);
   font-family: var(--font-mono) !important;
   font-size: 0.78rem !important;
   letter-spacing: 0.08em;
@@ -616,6 +620,75 @@ body[data-mood="dark"] .content__title {
   color: inherit;
   text-decoration-color: var(--season-red);
   text-underline-offset: 0.24em;
+}
+
+.about-modal__credits {
+  margin-top: 1.2rem;
+  border-top: 1px solid color-mix(in oklch, currentColor 18%, transparent);
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+.about-modal__credits summary {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.75;
+  transition: opacity 160ms ease-out;
+}
+.about-modal__credits summary::-webkit-details-marker { display: none; }
+.about-modal__credits summary::before {
+  content: '+';
+  display: inline-block;
+  width: 1.1em;
+  font-weight: 600;
+  color: var(--season-red);
+}
+.about-modal__credits[open] summary { opacity: 1; }
+.about-modal__credits[open] summary::before { content: '−'; }
+.about-modal__credits summary:hover,
+.about-modal__credits summary:focus-visible { opacity: 1; outline: none; }
+.about-modal__credits-intro {
+  margin: 0.7rem 0 0.5rem !important;
+  font-size: 0.85rem !important;
+  opacity: 0.78;
+}
+.about-modal__credits-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+.about-modal__credits-list li {
+  display: contents;
+}
+.about-modal__credits-list li span {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+.about-modal__credits-list li a {
+  color: inherit;
+  opacity: 0.7;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklch, currentColor 28%, transparent);
+  padding-bottom: 1px;
+  white-space: nowrap;
+  transition: opacity 160ms ease-out, border-color 160ms ease-out;
+}
+.about-modal__credits-list li a:hover,
+.about-modal__credits-list li a:focus-visible {
+  opacity: 1;
+  border-bottom-color: var(--season-red);
+  outline: none;
 }
 
 /* ==========================================================================
@@ -692,9 +765,21 @@ body[data-mood="dark"] .content__title {
   background: var(--seg-color, transparent);
   opacity: 0.55;
   border-right: 1px dashed color-mix(in oklch, currentColor 18%, transparent);
+  transition: opacity var(--drench-ms) var(--ease-out-quart);
 }
 .scrubber__seg:last-child { border-right: 0; }
 .scrubber__seg.active { opacity: 0.95; }
+
+/* Dark backdrop: tint segments toward cream so dark-mood seasons still read */
+body[data-mood="dark"] .scrubber__segments {
+  background: color-mix(in oklch, oklch(96% 0.014 85) 22%, transparent);
+  border-radius: 2px;
+}
+body[data-mood="dark"] .scrubber__seg {
+  background: color-mix(in oklch, var(--seg-color, transparent) 78%, oklch(96% 0.014 85) 22%);
+  opacity: 0.82;
+}
+body[data-mood="dark"] .scrubber__seg.active { opacity: 1; }
 
 /* Today marker — civic landmark, persists when handle scrubs past */
 .scrubber__today {
@@ -886,6 +971,15 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
 .content__body  { transition-delay: 120ms; }
 .content__footnote { transition-delay: 180ms; }
 .stamp          { transition-delay: 200ms; }
+
+/* ==========================================================================
+   Wide screens — title gets too operatic past ~1400px
+   ========================================================================== */
+@media (min-width: 1400px) {
+  :root {
+    --t-title: clamp(8rem, 2.4rem + 6.4vw, 11.2rem);
+  }
+}
 
 /* ==========================================================================
    Mobile

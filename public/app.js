@@ -15,7 +15,7 @@ const SEASONS = [
     weekStart: 0, weekEnd: 7,
     a: 'oklch(28% 0.04 250)', b: 'oklch(42% 0.06 245)',
     ink: 'oklch(96% 0.014 85)',
-    mood: 'dark', particles: 'rain-heavy', audio: 'rain-heavy',
+    mood: 'dark', particles: 'rain-heavy',
     segColor: 'oklch(35% 0.05 250)'
   },
   {
@@ -28,7 +28,7 @@ const SEASONS = [
     weekStart: 7, weekEnd: 9,
     a: 'oklch(94% 0.015 230)', b: 'oklch(78% 0.04 235)',
     ink: 'oklch(20% 0.05 245)',
-    mood: 'bright', particles: 'snow', audio: 'snow',
+    mood: 'bright', particles: 'snow',
     segColor: 'oklch(86% 0.03 230)'
   },
   {
@@ -41,7 +41,7 @@ const SEASONS = [
     weekStart: 9, weekEnd: 13,
     a: 'oklch(82% 0.03 230)', b: 'oklch(64% 0.06 220)',
     ink: 'oklch(16% 0.045 240)',
-    mood: 'neutral', particles: 'rain-light', audio: 'rain-light',
+    mood: 'neutral', particles: 'rain-light',
     segColor: 'oklch(74% 0.04 225)'
   },
   {
@@ -54,7 +54,7 @@ const SEASONS = [
     weekStart: 13, weekEnd: 14,
     a: 'oklch(82% 0.10 80)', b: 'oklch(60% 0.10 65)',
     ink: 'oklch(14% 0.08 55)',
-    mood: 'bright', particles: 'sun-rays', audio: 'sun-rays',
+    mood: 'bright', particles: 'sun-rays',
     segColor: 'oklch(74% 0.10 75)'
   },
   {
@@ -67,7 +67,7 @@ const SEASONS = [
     weekStart: 14, weekEnd: 18,
     a: 'oklch(46% 0.06 145)', b: 'oklch(32% 0.06 150)',
     ink: 'oklch(94% 0.02 100)',
-    mood: 'dark', particles: ['fog', 'mold-patch', 'mold-spore'], audio: 'fog',
+    mood: 'dark', particles: ['fog', 'mold-patch', 'mold-spore'],
     segColor: 'oklch(48% 0.06 148)'
   },
   {
@@ -80,7 +80,7 @@ const SEASONS = [
     weekStart: 18, weekEnd: 22,
     a: 'oklch(80% 0.07 355)', b: 'oklch(56% 0.09 355)',
     ink: 'oklch(10% 0.08 355)',
-    mood: 'neutral', particles: ['rain-light', 'petal', 'pollen'], audio: 'pollen',
+    mood: 'neutral', particles: ['rain-light', 'petal', 'pollen'],
     segColor: 'oklch(72% 0.08 355)'
   },
   {
@@ -93,7 +93,7 @@ const SEASONS = [
     weekStart: 22, weekEnd: 25,
     a: 'oklch(70% 0.012 248)', b: 'oklch(52% 0.018 245)',
     ink: 'oklch(10% 0.04 245)',
-    mood: 'neutral', particles: 'fog', audio: 'silence',
+    mood: 'neutral', particles: 'fog',
     segColor: 'oklch(62% 0.012 246)'
   },
   {
@@ -106,7 +106,7 @@ const SEASONS = [
     weekStart: 25, weekEnd: 29,
     a: 'oklch(92% 0.10 88)', b: 'oklch(72% 0.14 78)',
     ink: 'oklch(26% 0.09 60)',
-    mood: 'bright', particles: 'sun-rays', audio: 'sun-rays',
+    mood: 'bright', particles: 'sun-rays',
     segColor: 'oklch(84% 0.12 82)'
   },
   {
@@ -119,7 +119,7 @@ const SEASONS = [
     weekStart: 29, weekEnd: 32,
     a: 'oklch(86% 0.11 82)', b: 'oklch(62% 0.13 58)',
     ink: 'oklch(18% 0.10 50)',
-    mood: 'bright', particles: 'sun-rays', audio: 'sun-rays',
+    mood: 'bright', particles: 'sun-rays',
     segColor: 'oklch(76% 0.13 70)'
   },
   {
@@ -132,7 +132,7 @@ const SEASONS = [
     weekStart: 32, weekEnd: 36,
     a: 'oklch(48% 0.16 50)', b: 'oklch(36% 0.14 38)',
     ink: 'oklch(94% 0.02 60)',
-    mood: 'dark', particles: 'smoke', audio: 'smoke',
+    mood: 'dark', particles: 'smoke',
     segColor: 'oklch(50% 0.16 45)'
   },
   {
@@ -145,7 +145,7 @@ const SEASONS = [
     weekStart: 36, weekEnd: 39,
     a: 'oklch(72% 0.05 215)', b: 'oklch(52% 0.07 220)',
     ink: 'oklch(10% 0.05 240)',
-    mood: 'neutral', particles: 'rain-light', audio: 'rain-light',
+    mood: 'neutral', particles: 'rain-light',
     segColor: 'oklch(62% 0.06 218)'
   },
   {
@@ -158,7 +158,7 @@ const SEASONS = [
     weekStart: 39, weekEnd: 42,
     a: 'oklch(74% 0.08 80)', b: 'oklch(50% 0.07 62)',
     ink: 'oklch(8% 0.06 65)',
-    mood: 'neutral', particles: ['webs', 'spider'], audio: 'webs',
+    mood: 'neutral', particles: ['webs', 'spider'],
     segColor: 'oklch(64% 0.09 72)'
   },
   {
@@ -171,7 +171,7 @@ const SEASONS = [
     weekStart: 42, weekEnd: 45,
     a: 'oklch(35% 0.06 245)', b: 'oklch(78% 0.10 85)',
     ink: 'oklch(96% 0.014 85)',
-    mood: 'dark', particles: 'rain-heavy', audio: 'rain-heavy',
+    mood: 'dark', particles: 'rain-heavy',
     segColor: 'oklch(55% 0.08 165)'
   },
   {
@@ -184,7 +184,7 @@ const SEASONS = [
     weekStart: 45, weekEnd: 52,
     a: 'oklch(26% 0.04 250)', b: 'oklch(38% 0.06 245)',
     ink: 'oklch(96% 0.014 85)',
-    mood: 'dark', particles: 'rain-heavy', audio: 'rain-heavy',
+    mood: 'dark', particles: 'rain-heavy',
     segColor: 'oklch(30% 0.05 250)'
   }
 ];
@@ -264,94 +264,98 @@ function buildScrubber() {
 }
 buildScrubber();
 
-// ---------- Audio engine (Web Audio synthesis) ----------------------------
+// ---------- Audio engine (sampled ambience, lazy-loaded with crossfade) ----
+
+const SILENT_SEASONS = new Set(['junuary']);
+const AUDIO_FADE = 1.4;
 
 class Ambience {
-  constructor() {
+  constructor(seasonIds) {
+    this.seasonIds = seasonIds;
     this.on = false;
     this.ctx = null;
-    this.noise = null;
-    this.filter = null;
-    this.noiseGain = null;
     this.master = null;
-    this.lfo = null;
-    this.lfoGain = null;
-    this.mode = 'silence';
+    this.buffers = new Map();   // id -> AudioBuffer | Promise<AudioBuffer|null>
+    this.current = null;        // { source, gain, id }
+    this.activeId = seasonIds[0];
   }
-  _build() {
-    const ac = new (window.AudioContext || window.webkitAudioContext)();
-    this.ctx = ac;
 
-    // 4 seconds of white noise, looped
-    const buf = ac.createBuffer(1, ac.sampleRate * 4, ac.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
-    const src = ac.createBufferSource();
-    src.buffer = buf;
-    src.loop = true;
-    this.noise = src;
-
-    this.filter = ac.createBiquadFilter();
-    this.filter.type = 'bandpass';
-    this.filter.frequency.value = 1500;
-    this.filter.Q.value = 1;
-
-    this.noiseGain = ac.createGain();
-    this.noiseGain.gain.value = 0;
-
-    this.master = ac.createGain();
+  _ensureCtx() {
+    if (this.ctx) return;
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new Ctor();
+    this.master = this.ctx.createGain();
     this.master.gain.value = 0;
-
-    // LFO for wind-style cutoff modulation
-    this.lfo = ac.createOscillator();
-    this.lfo.frequency.value = 0.08;
-    this.lfoGain = ac.createGain();
-    this.lfoGain.gain.value = 0;
-    this.lfo.connect(this.lfoGain).connect(this.filter.frequency);
-
-    src.connect(this.filter).connect(this.noiseGain).connect(this.master).connect(ac.destination);
-
-    src.start();
-    this.lfo.start();
+    this.master.connect(this.ctx.destination);
   }
+
+  _load(id) {
+    if (SILENT_SEASONS.has(id)) return Promise.resolve(null);
+    if (this.buffers.has(id)) return Promise.resolve(this.buffers.get(id));
+    const p = fetch(`./audio/${id}.ogg`)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then(ab => this.ctx.decodeAudioData(ab))
+      .then(buf => { this.buffers.set(id, buf); return buf; })
+      .catch(err => { console.warn(`[audio] ${id} load failed:`, err); this.buffers.set(id, null); return null; });
+    this.buffers.set(id, p);
+    return p;
+  }
+
+  _prefetchNeighbors(id) {
+    if (!this.on || !this.ctx) return;
+    const i = this.seasonIds.indexOf(id);
+    if (i < 0) return;
+    const n = this.seasonIds.length;
+    this._load(this.seasonIds[(i + 1) % n]);
+    this._load(this.seasonIds[(i - 1 + n) % n]);
+  }
+
   async toggle() {
-    if (!this.ctx) this._build();
+    this._ensureCtx();
     if (this.ctx.state === 'suspended') await this.ctx.resume();
     this.on = !this.on;
     const t = this.ctx.currentTime;
     this.master.gain.cancelScheduledValues(t);
-    this.master.gain.linearRampToValueAtTime(this.on ? 1 : 0, t + 0.5);
-    if (this.on) this.setMode(this.mode);
+    this.master.gain.linearRampToValueAtTime(this.on ? 0.85 : 0, t + 0.6);
+    if (this.on) this.setMode(this.activeId);
     return this.on;
   }
-  setMode(mode) {
-    this.mode = mode;
-    if (!this.ctx) return;
-    const presets = {
-      'rain-heavy': { type: 'bandpass', freq: 1800, q: 1.2, gain: 0.18, lfo: 0 },
-      'rain-light': { type: 'lowpass',  freq: 1200, q: 0.8, gain: 0.10, lfo: 0 },
-      'snow':       { type: 'highpass', freq: 6000, q: 0.4, gain: 0.04, lfo: 0 },
-      'smoke':      { type: 'lowpass',  freq: 600,  q: 0.4, gain: 0.14, lfo: 320 },
-      'sun-rays':   { type: 'lowpass',  freq: 240,  q: 0.5, gain: 0.06, lfo: 0 },
-      'fog':        { type: 'lowpass',  freq: 420,  q: 0.4, gain: 0.07, lfo: 90 },
-      'webs':       { type: 'highpass', freq: 4800, q: 0.4, gain: 0.03, lfo: 0 },
-      'pollen':     { type: 'bandpass', freq: 1100, q: 0.6, gain: 0.05, lfo: 0 },
-      'silence':    { type: 'lowpass',  freq: 200,  q: 0.4, gain: 0.0,  lfo: 0 }
-    };
-    const p = presets[mode] || presets.silence;
-    const t = this.ctx.currentTime;
-    this.filter.type = p.type;
-    this.filter.frequency.cancelScheduledValues(t);
-    this.filter.frequency.linearRampToValueAtTime(p.freq, t + 1.2);
-    this.filter.Q.cancelScheduledValues(t);
-    this.filter.Q.linearRampToValueAtTime(p.q, t + 1.2);
-    this.lfoGain.gain.cancelScheduledValues(t);
-    this.lfoGain.gain.linearRampToValueAtTime(p.lfo, t + 1.2);
-    this.noiseGain.gain.cancelScheduledValues(t);
-    this.noiseGain.gain.linearRampToValueAtTime(p.gain, t + 1.2);
+
+  async setMode(id) {
+    this.activeId = id;
+    if (!this.on || !this.ctx) return;
+
+    const t0 = this.ctx.currentTime;
+    if (this.current) {
+      const prev = this.current;
+      prev.gain.gain.cancelScheduledValues(t0);
+      prev.gain.gain.setValueAtTime(prev.gain.gain.value, t0);
+      prev.gain.gain.linearRampToValueAtTime(0, t0 + AUDIO_FADE);
+      try { prev.source.stop(t0 + AUDIO_FADE + 0.1); } catch (_) {}
+      this.current = null;
+    }
+
+    if (SILENT_SEASONS.has(id)) return;
+
+    const buf = await this._load(id);
+    if (!buf || this.activeId !== id || !this.on) return;
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buf;
+    source.loop = true;
+    source.loopEnd = buf.duration;
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0;
+    source.connect(gain).connect(this.master);
+    source.start();
+    const t1 = this.ctx.currentTime;
+    gain.gain.linearRampToValueAtTime(1, t1 + AUDIO_FADE);
+    this.current = { source, gain, id };
+
+    this._prefetchNeighbors(id);
   }
 }
-const audio = new Ambience();
+const audio = new Ambience(SEASONS.map(s => s.id));
 
 // ---------- Particle engine -----------------------------------------------
 
@@ -1018,7 +1022,7 @@ function applySeason(s, opts = {}) {
   particles.setMode(s.particles);
 
   // Audio
-  audio.setMode(s.audio);
+  audio.setMode(s.id);
 
   // URL hash (replace, not push, to avoid history spam)
   if (opts.fromUser && location.hash !== `#${s.id}`) {

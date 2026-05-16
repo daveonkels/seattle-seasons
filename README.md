@@ -28,7 +28,8 @@ Lifted from the original design brief:
 |---|---|
 | `public/index.html` | Semantic chrome, scrubber rig, content layer, inline Space Needle SVG |
 | `public/style.css` | OKLCH season palette, three-layer z-stack, reveal sequence, motion tokens |
-| `public/app.js` | 14-season data, scrubber controller, particle engine, Web Audio engine |
+| `public/app.js` | 14-season data, scrubber controller, particle engine, sampled ambience engine, live weather |
+| `public/audio/*.ogg` | 13 CC0 field recordings from Freesound (one per non-silent season), trimmed to ~25s loopable beds |
 | `public/favicon.svg` + PNG/ICO family | 14-segment year wheel with a Space Needle silhouette at center |
 | `public/site.webmanifest` | PWA manifest (navy theme, cream background) |
 | `README.md`, `.gitignore` | Repo-only |
@@ -41,16 +42,11 @@ Lifted from the original design brief:
 
 ### Audio
 
-Synthesized via Web Audio — no WAV files are shipped. A single white-noise source feeds a biquad filter and a gain node. Per-season presets:
+Sampled field recordings from [Freesound](https://freesound.org), all CC0. One OGG per season in `public/audio/` (~25s each at 80kbps Vorbis, ~3 MB total, ~250 KB per clip). Lazy-loaded: nothing is fetched until you toggle audio on, then the current season plus its two neighbors are decoded. Crossfading between seasons uses two `AudioBufferSourceNode`s ping-ponging through a shared master gain (1.4s linear ramps).
 
-- `rain-heavy` — bandpass 1800 Hz, narrow Q
-- `rain-light` — lowpass 1200 Hz
-- `snow` — highpass 6 kHz sparkle
-- `smoke` — lowpass 600 Hz with an LFO modulating the cutoff (wind)
-- `sun-rays` — lowpass 240 Hz drone
-- `silence` — gain → 0 (Jünuary's joke)
+Jünuary stays silent on purpose. The fetch is suppressed entirely — no 404, no decode, just gain → 0.
 
-Off by default; toggle with `M` or the speaker icon.
+Off by default; toggle with `M` or the speaker icon. Full attribution lives in the About modal (`?` icon) under "Sound credits."
 
 ## Run locally
 
