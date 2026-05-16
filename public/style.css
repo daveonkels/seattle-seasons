@@ -22,7 +22,9 @@
   --drench-ms: 900ms;
   --content-ms: 600ms;
 
-  /* Typography */
+  /* Typography. --font-body is swappable via body[data-body-font]; default
+     stays Nippo. The toggle is wired up for an A/B/C comparison between
+     sans (Nippo, current) and three serif candidates. */
   --font-display: 'Khand', 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
   --font-mono: 'Fragment Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-body: 'Nippo', system-ui, -apple-system, sans-serif;
@@ -62,6 +64,18 @@
   --handle-knob-top: 0;
   --handle-knob-border: 2px;
 }
+
+/* Body-font A/B/C toggle. Press F to cycle, or use ?font=source|literata|author */
+body[data-body-font="source"]   { --font-body: 'Source Serif 4', Georgia, serif; }
+body[data-body-font="literata"] { --font-body: 'Literata', Georgia, serif; }
+body[data-body-font="author"]   { --font-body: 'Author', Georgia, serif; }
+/* Serif body needs a hair more line-height than the humanist sans does. */
+body[data-body-font="source"] .content__body,
+body[data-body-font="literata"] .content__body,
+body[data-body-font="author"] .content__body { line-height: 1.5; }
+body[data-body-font="source"] .stamp__text,
+body[data-body-font="literata"] .stamp__text,
+body[data-body-font="author"] .stamp__text { line-height: 1.55; }
 
 /* Civic-red contrast adapts to scene mood. Hue locked at 28; only L shifts.
    Bright/neutral push deeper than instinct suggests because the kicker sits on
@@ -511,6 +525,40 @@ body[data-mood="dark"] .content__title {
 @keyframes audio-eq {
   from { transform: scaleY(0.4); }
   to   { transform: scaleY(1.6); }
+}
+
+/* ==========================================================================
+   Font toggle chip — bottom-left, shows active body font during the A/B/C test
+   ========================================================================== */
+.font-chip {
+  position: fixed;
+  left: var(--chrome-pad);
+  bottom: calc(var(--scrubber-space-h) + 0.6rem);
+  z-index: 11;
+  padding: 0.45em 0.7em;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--season-ink);
+  background: color-mix(in oklch, var(--season-a) 78%, transparent);
+  border: 1px solid color-mix(in oklch, currentColor 28%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 240ms var(--ease-out-quart),
+              transform 240ms var(--ease-out-quart),
+              background var(--drench-ms) var(--ease-out-quart),
+              color var(--drench-ms) var(--ease-out-quart);
+}
+.font-chip[data-state="visible"] {
+  opacity: 0.95;
+  transform: translateY(0);
+}
+@media (max-height: 600px) {
+  .font-chip { font-size: 0.5rem; padding: 0.35em 0.6em; bottom: calc(var(--scrubber-space-h) + 0.4rem); }
 }
 
 /* ==========================================================================

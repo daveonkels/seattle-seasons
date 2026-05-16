@@ -239,6 +239,47 @@ const aboutBtn = $('about-btn');
 const aboutModal = $('about-modal');
 const aboutClose = $('about-close');
 const todayMarker = $('scrubber-today');
+const fontChip = $('font-chip');
+
+// ---------- Body-font A/B/C toggle ---------------------------------------
+
+const FONT_OPTIONS = [
+  { id: null,        label: 'Nippo (default)' },
+  { id: 'source',    label: 'Source Serif 4' },
+  { id: 'literata',  label: 'Literata' },
+  { id: 'author',    label: 'Author' }
+];
+let fontChipTimer = null;
+function applyBodyFont(id, { showChip = false } = {}) {
+  if (id) body.dataset.bodyFont = id;
+  else delete body.dataset.bodyFont;
+  const opt = FONT_OPTIONS.find(o => o.id === id) || FONT_OPTIONS[0];
+  if (fontChip) {
+    fontChip.hidden = false;
+    fontChip.textContent = `Body: ${opt.label}`;
+    if (showChip) {
+      fontChip.dataset.state = 'visible';
+      clearTimeout(fontChipTimer);
+      fontChipTimer = setTimeout(() => { fontChip.dataset.state = ''; }, 1800);
+    }
+  }
+  // Reflect in URL for shareable comparison
+  const url = new URL(location.href);
+  if (id) url.searchParams.set('font', id);
+  else url.searchParams.delete('font');
+  history.replaceState(null, '', url.toString().replace(location.origin, '') || '/');
+}
+function cycleBodyFont() {
+  const current = body.dataset.bodyFont || null;
+  const idx = FONT_OPTIONS.findIndex(o => o.id === current);
+  const next = FONT_OPTIONS[(idx + 1) % FONT_OPTIONS.length];
+  applyBodyFont(next.id, { showChip: true });
+}
+(function initBodyFont() {
+  const param = new URLSearchParams(location.search).get('font');
+  const valid = FONT_OPTIONS.some(o => o.id === param);
+  if (valid && param) applyBodyFont(param, { showChip: true });
+})();
 
 // ---------- Render scrubber decorations -----------------------------------
 
@@ -1148,6 +1189,8 @@ window.addEventListener('keydown', (e) => {
     case 'M': audioBtn.click(); break;
     case 'r':
     case 'R': jumpToNow(); break;
+    case 'f':
+    case 'F': cycleBodyFont(); break;
     default: handled = false;
   }
   if (handled) e.preventDefault();
