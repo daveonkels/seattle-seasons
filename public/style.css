@@ -49,6 +49,7 @@
 
   /* Layout */
   --chrome-pad: clamp(1.25rem, 2.4vw, 2.25rem);
+  --band-h: 36px;
   --scrubber-space-h: 86px;
   --scrubber-h: 86px;
   --scrubber-track-h: 28px;
@@ -188,9 +189,9 @@ body[data-season="convergence-zones"] .stamp__label {
   padding: var(--chrome-pad);
   pointer-events: auto;
 }
-.chrome__corner--tl { top: 0; left: 0; max-width: min(640px, 70vw); }
+.chrome__corner--tl { top: var(--band-h); left: 0; max-width: min(640px, 70vw); }
 .chrome__corner--tr {
-  top: 0;
+  top: var(--band-h);
   right: 0;
   display: flex;
   flex-direction: column;
@@ -216,71 +217,70 @@ body[data-season="convergence-zones"] .stamp__label {
   opacity: 0.75;
 }
 
-.advisory {
+.weather-band {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  height: var(--band-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--chrome-pad);
   font: inherit;
-  appearance: none;
-  background: none;
-  border: 0;
-  padding: 0;
-  text-align: right;
-  cursor: pointer;
-  color: inherit;
-  display: inline-flex;
-  max-width: min(34rem, 58vw);
   font-family: var(--font-mono);
-  font-size: clamp(0.62rem, 0.56rem + 0.25vw, 0.78rem);
-  line-height: 1.25;
+  font-size: clamp(0.6rem, 0.55rem + 0.2vw, 0.72rem);
+  line-height: 1.2;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  opacity: 0.78;
-  transition: filter 280ms var(--ease-out-quart),
-              opacity 240ms var(--ease-out-quart),
+  color: var(--season-ink);
+  background: color-mix(in oklch, var(--season-a) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklch, currentColor 22%, transparent);
+  cursor: pointer;
+  appearance: none;
+  width: 100%;
+  text-align: center;
+  transition: background var(--drench-ms) var(--ease-out-quart),
               color var(--drench-ms) var(--ease-out-quart),
-              transform 280ms var(--ease-out-quart);
+              filter 280ms var(--ease-out-quart);
 }
-.advisory:hover,
-.advisory:focus-visible {
-  filter: brightness(1.18) saturate(1.05);
-  opacity: 1;
-  transform: translateY(-1px);
+.weather-band:hover,
+.weather-band:focus-visible {
+  filter: brightness(1.12);
 }
-.advisory:focus-visible {
+.weather-band:focus-visible {
   outline: 2px solid var(--season-red);
-  outline-offset: 3px;
+  outline-offset: -3px;
 }
-.advisory__text {
+.weather-band__inner {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.45em;
-  justify-content: flex-end;
+  gap: 0.55em;
   align-items: center;
+  justify-content: center;
+  opacity: 0.92;
 }
-.advisory__label {
-  /* Inherits advisory color — no longer the civic-red kicker. */
-}
-.advisory__group {
+.weather-band__group {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.45em;
+  gap: 0.55em;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
 }
-.advisory__sep {
-  opacity: 0.45;
-}
-.advisory__icon {
+.weather-band__sep { opacity: 0.42; }
+.weather-band__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.25em;
-  height: 1.25em;
+  width: 1.4em;
+  height: 1.4em;
 }
-.advisory__icon svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.advisory__icon[data-state="live"] svg { animation: wx-pulse 2.8s var(--ease-out-quart) infinite; }
+.weather-band__icon svg { width: 100%; height: 100%; display: block; }
+.weather-band__icon[data-state="live"] svg { animation: wx-pulse 2.8s var(--ease-out-quart) infinite; }
 @keyframes wx-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.55; }
@@ -318,7 +318,7 @@ body[data-season="oppressive-sun"] .skyline { opacity: 0.2; }
   grid-template-rows: 1fr auto;
   align-items: end;
   padding:
-    calc(var(--chrome-pad) + 5.5rem)
+    calc(var(--chrome-pad) + 5.5rem + var(--band-h))
     var(--chrome-pad)
     calc(var(--scrubber-space-h) + clamp(2rem, 4vh, 3.5rem));
   column-gap: clamp(2rem, 6vw, 7rem);
@@ -889,6 +889,7 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
 @media (max-width: 760px) {
   :root {
     --chrome-pad: 1.1rem;
+    --band-h: 34px;
     --scrubber-space-h: 86px;
     --scrubber-h: 86px;
     --scrubber-track-h: 28px;
@@ -906,6 +907,10 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
     --t-title: clamp(2.2rem, 13vw, 5rem);
   }
   .scrubber__today { bottom: -34px; }
+  /* Compact band: drop the prefix label + cloud % so it fits on one line */
+  .weather-band__label { display: none; }
+  #wx-clouds { display: none; }
+  #wx-clouds + .weather-band__sep { display: none; }
   .chrome__corner--tl { max-width: 60vw; }
   .chrome__corner--tr { max-width: 48vw; }
   .advisory {
@@ -916,7 +921,7 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
   .micro-controls { margin-bottom: 0.5em; }
   .skyline { display: none; }
   .content {
-    padding-top: calc(var(--chrome-pad) + 7.5rem);
+    padding-top: calc(var(--chrome-pad) + 7.5rem + var(--band-h));
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto auto;
     row-gap: var(--sp-5);
@@ -962,6 +967,7 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
 
   :root {
     --chrome-pad: 0.85rem;
+    --band-h: 28px;
     --t-title: clamp(1.9rem, 7vw, 4.4rem);
     --t-lede: clamp(0.78rem, 1.4vw, 0.95rem);
     --scrubber-h: 60px;
@@ -975,6 +981,10 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
     --today-dot-size: 6px;
   }
   .skyline { display: none; }
+  /* Compact band: drop the prefix label, drop cloud %, keep the rest */
+  .weather-band__label { display: none; }
+  #wx-clouds { display: none; }
+  #wx-clouds + .weather-band__sep { display: none; }
 
   .chrome__corner { padding: 0.55rem 0.85rem; }
   .chrome__corner--tl { max-width: 52vw; }
@@ -995,7 +1005,7 @@ body[data-loaded="true"] .reveal-word:nth-child(2) { transition-delay: 460ms; }
   .scrubber__today-label { font-size: 0.5rem; }
 
   .content {
-    padding: calc(var(--chrome-pad) + 2.1rem) var(--chrome-pad) calc(var(--scrubber-space-h) + 1.1rem);
+    padding: calc(var(--chrome-pad) + 2.1rem + var(--band-h)) var(--chrome-pad) calc(var(--scrubber-space-h) + 1.1rem);
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     grid-template-rows: 1fr auto;
     column-gap: clamp(0.9rem, 2.6vw, 2rem);

@@ -27,6 +27,24 @@
 <div id="drench" aria-hidden="true"></div>
 <div id="vignette" aria-hidden="true"></div>
 
+<button class="weather-band" id="advisory-btn" type="button" aria-label="Current conditions — jump to today">
+  <span class="weather-band__inner" aria-live="polite">
+    <span class="weather-band__label">Current Conditions:</span>
+    <span class="weather-band__group">
+      <span class="weather-band__icon" id="wx-icon" aria-hidden="true"></span>
+      <span id="wx-temp">—°</span>
+      <span class="weather-band__sep" aria-hidden="true">·</span>
+      <span id="wx-cond">—</span>
+      <span class="weather-band__sep" aria-hidden="true">·</span>
+      <span id="wx-clouds">—% cloud</span>
+      <span class="weather-band__sep" aria-hidden="true">·</span>
+      <span id="wx-uv">UV —</span>
+      <span class="weather-band__sep" aria-hidden="true">·</span>
+      <span>(<span id="right-now-season">—</span>)</span>
+    </span>
+  </span>
+</button>
+
 <header class="chrome">
   <div class="chrome__corner chrome__corner--tl">
     <h1 class="chrome__title"><span class="reveal-word">Seattle</span> <span class="reveal-word">Seasons</span></h1>
@@ -52,23 +70,6 @@
         <span class="micro-question" aria-hidden="true">?</span>
       </button>
     </div>
-    <button class="advisory" id="advisory-btn" type="button" aria-label="Go to the current week">
-      <span class="advisory__text" aria-live="polite">
-        <span class="advisory__label">Current Conditions:</span>
-        <span class="advisory__group">
-          <span class="advisory__icon" id="wx-icon" aria-hidden="true"></span>
-          <span id="wx-temp">—°</span>
-          <span class="advisory__sep" aria-hidden="true">·</span>
-          <span id="wx-cond">—</span>
-          <span class="advisory__sep" aria-hidden="true">·</span>
-          <span id="wx-clouds">—% cloud</span>
-          <span class="advisory__sep" aria-hidden="true">·</span>
-          <span id="wx-uv">UV —</span>
-          <span class="advisory__sep" aria-hidden="true">·</span>
-          <span class="advisory__season">(<span id="right-now-season">—</span>)</span>
-        </span>
-      </span>
-    </button>
   </div>
 </header>
 
