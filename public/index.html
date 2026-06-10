@@ -3,10 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Seattle Seasons — A Guide for New Arrivals</title>
-<meta name="description" content="An interactive field guide to the 14 unofficial seasons of Seattle, Washington. Scrub through the year.">
-<meta property="og:title" content="Seattle Seasons">
-<meta property="og:description" content="An interactive field guide to the 14 unofficial seasons of Seattle, Washington.">
+<title>Seattle Seasons: Interactive Guide to Seattle Weather</title>
+<meta name="description" content="Seattle Seasons is an interactive field guide to Seattle weather and the 14 unofficial seasons locals joke about, from The Dark Wet and Junuary to Smoke and Spiders.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Dave Onkels">
+<link rel="canonical" href="https://seattle.onk.io/">
+<meta name="application-name" content="Seattle Seasons">
+<meta name="apple-mobile-web-app-title" content="Seattle Seasons">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Seattle Seasons">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://seattle.onk.io/">
+<meta property="og:title" content="Seattle Seasons: Interactive Guide to Seattle Weather">
+<meta property="og:description" content="Scrub through Seattle's 14 unofficial seasons, from The Dark Wet and Junuary to Smoke, Spiders, and the brief miracle of Glorious Sun.">
+<meta property="og:image" content="https://seattle.onk.io/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Seattle Seasons showing The Dark Wet over a moody Seattle skyline.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Seattle Seasons: Interactive Guide to Seattle Weather">
+<meta name="twitter:description" content="A deadpan interactive field guide to Seattle weather and the 14 unofficial seasons locals know too well.">
+<meta name="twitter:image" content="https://seattle.onk.io/og-image.png">
+<meta name="twitter:image:alt" content="Seattle Seasons showing The Dark Wet over a moody Seattle skyline.">
 
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
@@ -21,6 +40,61 @@
 <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Work+Sans:wght@400;500&family=Abril+Fatface&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css">
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://seattle.onk.io/#website",
+      "url": "https://seattle.onk.io/",
+      "name": "Seattle Seasons",
+      "alternateName": "Seattle Weather Seasons",
+      "description": "An interactive field guide to Seattle weather and the 14 unofficial seasons locals joke about.",
+      "inLanguage": "en-US",
+      "creator": {
+        "@type": "Person",
+        "name": "Dave Onkels",
+        "url": "https://onk.io/"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://seattle.onk.io/#app",
+      "url": "https://seattle.onk.io/",
+      "name": "Seattle Seasons",
+      "applicationCategory": "EntertainmentApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript for the interactive weather scrubber.",
+      "description": "Scrub through the year to explore Seattle's 14 unofficial weather seasons, including The Dark Wet, Junuary, Smoke, Spiders, and Glorious Sun.",
+      "isAccessibleForFree": true
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://seattle.onk.io/#seasons",
+      "name": "Seattle's 14 unofficial seasons",
+      "numberOfItems": 14,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "url": "https://seattle.onk.io/#dark-wet", "name": "The Dark Wet", "description": "Rain, gray skies, and deep thoughts." },
+        { "@type": "ListItem", "position": 2, "url": "https://seattle.onk.io/#paralyzing-snow", "name": "Paralyzing Snow", "description": "Panic, abandoned hatchbacks, and joy." },
+        { "@type": "ListItem", "position": 3, "url": "https://seattle.onk.io/#brightening-wet", "name": "Brightening Wet", "description": "Rain, but make it optimistic." },
+        { "@type": "ListItem", "position": 4, "url": "https://seattle.onk.io/#suncadia-break", "name": "Suncadia Break", "description": "Crowds, traffic, and regret for not leaving sooner." },
+        { "@type": "ListItem", "position": 5, "url": "https://seattle.onk.io/#molding-wet", "name": "Molding Wet", "description": "Moss, mushrooms, and mystery smells." },
+        { "@type": "ListItem", "position": 6, "url": "https://seattle.onk.io/#flowering-wet", "name": "Flowering Wet", "description": "Blooms, allergies, the audacity of pollen." },
+        { "@type": "ListItem", "position": 7, "url": "https://seattle.onk.io/#junuary", "name": "Junuary", "description": "Confusion, layers, and a somber gloom." },
+        { "@type": "ListItem", "position": 8, "url": "https://seattle.onk.io/#glorious-sun", "name": "Glorious Sun", "description": "Vitamin D, crowds, and mild sunburn." },
+        { "@type": "ListItem", "position": 9, "url": "https://seattle.onk.io/#oppressive-sun", "name": "Oppressive Sun", "description": "Complaints, AC envy, and melted patience." },
+        { "@type": "ListItem", "position": 10, "url": "https://seattle.onk.io/#smoke", "name": "Smoke", "description": "Air filters, cancellations, and indoor everything." },
+        { "@type": "ListItem", "position": 11, "url": "https://seattle.onk.io/#welcome-drizzle", "name": "Welcome Drizzle", "description": "Light rain, deep sighs, and high acceptance." },
+        { "@type": "ListItem", "position": 12, "url": "https://seattle.onk.io/#spiders", "name": "Spiders", "description": "Webs, jump scares, and dramatic exits." },
+        { "@type": "ListItem", "position": 13, "url": "https://seattle.onk.io/#convergence-zones", "name": "Convergence Zones", "description": "Chaos, micro-climates, and weird traffic." },
+        { "@type": "ListItem", "position": 14, "url": "https://seattle.onk.io/#dark-wet-2", "name": "The Dark Wet returns", "description": "Peace, familiarity, and a warm hoodie." }
+      ]
+    }
+  ]
+}
+</script>
+
 <script
   src="https://metrics.dv.nu/api/script.js"
   data-site-id="bda1eb040e05"
@@ -32,6 +106,79 @@
 <canvas id="scene" aria-hidden="true"></canvas>
 <div id="drench" aria-hidden="true"></div>
 <div id="vignette" aria-hidden="true"></div>
+
+<noscript>
+  <style>
+    body {
+      min-height: 100vh;
+      height: auto;
+      overflow: auto;
+      user-select: text;
+      cursor: auto;
+      color: oklch(18% 0.05 245);
+      background: oklch(96% 0.012 85);
+    }
+    #scene,
+    #drench,
+    #vignette,
+    .weather-band,
+    .chrome,
+    .skyline,
+    .content,
+    .scrubber,
+    .about-modal {
+      display: none !important;
+    }
+    .noscript-guide {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
+      font-family: 'Work Sans', system-ui, -apple-system, sans-serif;
+      line-height: 1.55;
+    }
+    .noscript-guide h1 {
+      margin: 0 0 0.3em;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(2.5rem, 9vw, 5rem);
+      line-height: 0.95;
+    }
+    .noscript-guide p {
+      max-width: 58ch;
+    }
+    .noscript-guide ol {
+      padding-left: 1.2rem;
+      columns: 2;
+      column-gap: 2rem;
+    }
+    .noscript-guide li {
+      break-inside: avoid;
+      margin-bottom: 0.45rem;
+    }
+    @media (max-width: 640px) {
+      .noscript-guide ol { columns: 1; }
+    }
+  </style>
+  <section class="noscript-guide" aria-labelledby="noscript-title">
+    <h1 id="noscript-title">Seattle Seasons</h1>
+    <p>A deadpan interactive field guide to Seattle weather and the 14 unofficial seasons locals know too well. Enable JavaScript to scrub through the year, move the weather, and hear the ambient field recordings.</p>
+    <ol>
+      <li>The Dark Wet: rain, gray skies, and deep thoughts.</li>
+      <li>Paralyzing Snow: panic, abandoned hatchbacks, and joy.</li>
+      <li>Brightening Wet: rain, but make it optimistic.</li>
+      <li>Suncadia Break: crowds, traffic, and regret for not leaving sooner.</li>
+      <li>Molding Wet: moss, mushrooms, and mystery smells.</li>
+      <li>Flowering Wet: blooms, allergies, the audacity of pollen.</li>
+      <li>Junuary: confusion, layers, and a somber gloom.</li>
+      <li>Glorious Sun: vitamin D, crowds, and mild sunburn.</li>
+      <li>Oppressive Sun: complaints, AC envy, and melted patience.</li>
+      <li>Smoke: air filters, cancellations, and indoor everything.</li>
+      <li>Welcome Drizzle: light rain, deep sighs, and high acceptance.</li>
+      <li>Spiders: webs, jump scares, and dramatic exits.</li>
+      <li>Convergence Zones: chaos, micro-climates, and weird traffic.</li>
+      <li>The Dark Wet returns: peace, familiarity, and a warm hoodie.</li>
+    </ol>
+  </section>
+</noscript>
 
 <button class="weather-band" id="advisory-btn" type="button" aria-label="Current conditions — jump to today">
   <span class="weather-band__inner" aria-live="polite">
@@ -100,17 +247,17 @@
 
 <main class="content" id="content">
   <div class="content__head">
-    <p class="content__subtitle" id="season-subtitle"></p>
-    <h2 class="content__title" id="season-title"></h2>
+    <p class="content__subtitle" id="season-subtitle">The OG</p>
+    <h2 class="content__title" id="season-title">The Dark Wet</h2>
   </div>
   <div class="content__body-wrap">
-    <p class="content__body" id="season-body"></p>
+    <p class="content__body" id="season-body">It's not wet. It's just Seattle.</p>
     <p class="content__footnote" id="season-footnote"></p>
   </div>
 
   <aside class="stamp" id="season-stamp">
     <p class="stamp__label">Expect</p>
-    <p class="stamp__text" id="stamp-text"></p>
+    <p class="stamp__text" id="stamp-text">Rain, gray skies, and deep thoughts.</p>
   </aside>
 </main>
 
@@ -138,13 +285,33 @@
   </div>
 </footer>
 
-<dialog class="about-modal" id="about-modal" aria-labelledby="about-title">
+<dialog class="about-modal" id="about-modal" aria-labelledby="about-title" aria-describedby="about-summary">
   <div class="about-modal__panel">
     <button class="about-modal__close" id="about-close" type="button" aria-label="Close">×</button>
     <p class="about-modal__eyebrow">Seattle Seasons</p>
     <h2 class="about-modal__title" id="about-title">What is this?</h2>
-    <p>An interactive field guide to Seattle's 14 unofficial seasons. It started as a deadpan civic-style poster for new arrivals; this version lets the weather move as you scrub through the year.</p>
+    <p id="about-summary">An interactive field guide to Seattle's 14 unofficial seasons. It started as a deadpan civic-style poster for new arrivals; this version lets the weather move as you scrub through the year.</p>
     <p>Drag, scroll, swipe, or use the left and right arrow keys to move season by season.</p>
+
+    <details class="about-modal__season-index">
+      <summary>All 14 seasons</summary>
+      <ol class="about-modal__season-list">
+        <li><a href="#dark-wet">The Dark Wet</a><span>Rain, gray skies, and deep thoughts.</span></li>
+        <li><a href="#paralyzing-snow">Paralyzing Snow</a><span>Panic, abandoned hatchbacks, and joy.</span></li>
+        <li><a href="#brightening-wet">Brightening Wet</a><span>Rain, but make it optimistic.</span></li>
+        <li><a href="#suncadia-break">Suncadia Break</a><span>Crowds, traffic, and regret for not leaving sooner.</span></li>
+        <li><a href="#molding-wet">Molding Wet</a><span>Moss, mushrooms, and mystery smells.</span></li>
+        <li><a href="#flowering-wet">Flowering Wet</a><span>Blooms, allergies, the audacity of pollen.</span></li>
+        <li><a href="#junuary">Jünuary</a><span>Confusion, layers, and a somber gloom.</span></li>
+        <li><a href="#glorious-sun">Glorious Sun</a><span>Vitamin D, crowds, and mild sunburn.</span></li>
+        <li><a href="#oppressive-sun">Oppressive Sun</a><span>Complaints, AC envy, and melted patience.</span></li>
+        <li><a href="#smoke">Smoke</a><span>Air filters, cancellations, and indoor everything.</span></li>
+        <li><a href="#welcome-drizzle">Welcome Drizzle</a><span>Light rain, deep sighs, and high acceptance.</span></li>
+        <li><a href="#spiders">Spiders</a><span>Webs, jump scares, and dramatic exits.</span></li>
+        <li><a href="#convergence-zones">Convergence Zones</a><span>Chaos, micro-climates, and weird traffic.</span></li>
+        <li><a href="#dark-wet-2">The Dark Wet returns</a><span>Peace, familiarity, and a warm hoodie.</span></li>
+      </ol>
+    </details>
 
     <details class="about-modal__credits">
       <summary>Sound credits</summary>

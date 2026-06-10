@@ -1353,7 +1353,7 @@ shareBtn.addEventListener('click', async () => {
   const url = `${location.origin}${location.pathname}#${s.id}`;
   try {
     if (navigator.share) {
-      await navigator.share({ title: 'Seattle Seasons', text: `${s.name} — ${s.expect}`, url });
+      await navigator.share({ title: 'Seattle Seasons: Interactive Guide to Seattle Weather', text: `${s.name}: ${s.expect}`, url });
     } else {
       await navigator.clipboard.writeText(url);
       flashTip(shareBtn, 'Link copied');

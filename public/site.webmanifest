@@ -1,7 +1,9 @@
 {
   "name": "Seattle Seasons",
   "short_name": "Seasons",
-  "description": "An interactive field guide to the 14 unofficial seasons of Seattle.",
+  "description": "An interactive field guide to Seattle weather and the 14 unofficial seasons locals joke about.",
+  "id": "/",
+  "scope": "/",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
@@ -11,5 +13,15 @@
   "theme_color": "#243154",
   "background_color": "#f5ede0",
   "display": "standalone",
-  "start_url": "/"
+  "start_url": "/",
+  "categories": ["entertainment", "weather", "travel"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Seattle Seasons interactive weather guide"
+    }
+  ]
 }

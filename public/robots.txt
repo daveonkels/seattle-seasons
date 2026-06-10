@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://seattle.onk.io/sitemap.xml
