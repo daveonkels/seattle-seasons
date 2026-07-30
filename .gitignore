@@ -47,3 +47,6 @@ Desktop.ini
 
 # ---- Design source reference (third-party image, kept local only) ----
 City of Seattle Advisory Poster.png
+
+# ---- Local agent skill tooling ----
+.agents/
